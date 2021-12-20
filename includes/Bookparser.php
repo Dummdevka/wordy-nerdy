@@ -2,27 +2,24 @@
 
 class Bookparser
 {
-    public function __construct( $src )
+    public function __construct()
+    {
+    }
+
+    public function split( $src )
     {
         $files = $this->read_source($src);
         foreach( $files as $filename ){
-            //parse file content
-            $parse = $this->split($src . DS . $filename);
+            $parse = [];
+            if( file_exists($src . DS . $filename) && is_readable($src . DS . $filename) ){
+                //Read
+                $content = trim(file_get_contents($src . DS . $filename));
+    
+                //YOU CAN ALTER PARSING REGEX HERE
+                array_push($parse, preg_split('/(?<=[.?!;])\s+/', $content, -1, PREG_SPLIT_NO_EMPTY));
+            }
+            return $parse;      
         }
-    }
-
-    public function split( $file )
-    {
-        //Open file
-        if( file_exists($file) && is_readable($file) ){
-            //Read
-            $content = trim(file_get_contents($file));
-
-            //YOU CAN ALTER PARSING REGEX HERE
-            $res = preg_split('/(?<=[.?!;])\s+/', $content, -1, PREG_SPLIT_NO_EMPTY);
-            return $res;
-        }
-            
     }
     public function read_source( $src )
     {
@@ -36,7 +33,8 @@ class Bookparser
 
             while (($entry = readdir($handle)) !== false) {
                 if (preg_match('/^[A-Za-z0-9_-]+\.txt$/', $entry)) {
-                    array_push($files, $entry);
+                    $entry_str = preg_replace('/\s+/', ' ', $entry);
+                    array_push($files, trim($entry_str));
                 }
             }
             closedir($handle);
@@ -47,3 +45,4 @@ class Bookparser
         }
     }
 }
+

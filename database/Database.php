@@ -33,8 +33,12 @@ class Database
 
     public function booksLoaded() {
         if( !$this->table_exists('wd_books')){
-            echo '<pre>';
-            $books = new Bookparser(BASEDIR . '/contents');
+            //Upload the books
+            $books = new Bookparser();
+            foreach( $books->split(BASEDIR . '/contents')[0] as $str ){
+                $val = $this->conn->quote($str);
+                $this->conn->exec("insert into wd_books(sentence) values ($val);");
+            }
         }
     }
 
