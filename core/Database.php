@@ -30,7 +30,8 @@ class Database
             }
         }
     }
-
+    
+    //Check that books are loaded into database
     public function booksLoaded() {
         if( !$this->table_exists('wd_books')){
             //Upload the books
@@ -44,7 +45,7 @@ class Database
 
     public function table_exists( $table ) {
         try{
-            $this->conn->exec('select * from' . $table . 'where id=1');
+            $this->conn->exec('select * from ' . $table . ' where id=1');
             return true;
         } catch( PDOException $e ){
             return false;
