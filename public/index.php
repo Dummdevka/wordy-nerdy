@@ -18,7 +18,7 @@ define('BASEDIR', dirname(__DIR__,1));
 define('DS', DIRECTORY_SEPARATOR);
 define('CLASS_DIR', BASEDIR . '/classes/');
 define('VIEWS_DIR', BASEDIR . '/views/');
-$config = require_once BASEDIR . '/config.php';
+//$config = require_once BASEDIR . '/config.php';
 
 //Autoloader
 require_once BASEDIR . '/vendor/autoload.php';
@@ -29,33 +29,19 @@ use Monolog\Handler\StreamHandler;
 $logger = new Logger('wordy');
 $logger->pushHandler(new StreamHandler(BASEDIR . '/app.log', Logger::DEBUG));
 
-//Database connection
-$database = new Database($config['database']);
-
-//Layout
-//require_once VIEWS_DIR . 'layout.php';
 //Slim routing
 $app = AppFactory::create();
 
+// /$database = new Database($config['database']);
+
 $app = $app->setBasePath('/wordy');
-$app->redirect('/wordy', '/wordy/');
-$app->get('/', function (Request $request, Response $response, $args) {
-	$page = 'search';
-	// $page = require_once VIEWS_DIR . 'layout.php';
-	// $response->getBody()->write($page);
-	// $response->withHeader('Content-type', 'text/html');
-	return $page;
-});
+//$app->redirect('/', '/search');
+
 $app->get('/{page}', [\HomeController::class, 'render']);
 
+$app->get('/lit-search/{word}', [\SearchController::class, 'get_lit']);
+$app->get('/web-search/{word}', [\SearchController::class, 'get_web']);
 
-$app->get('/search/{word}', function (Request $request, Response $response, $args) {
-    global $config;
-	$web = new Webparser( $config['websites_url'] );
-	$response->getBody()->write(json_encode($web->find_ex( $args['word'])));
-	
-	return $response;
-});
 
 $app->run();
 
