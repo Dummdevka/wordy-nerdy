@@ -1,0 +1,23 @@
+{
+    "name": "dummdevka/wordy",
+    "require": {
+        "slim/slim": "^4.9",
+        "slim/psr7": "^1.5",
+        "monolog/monolog": "^2.3",
+        "delight-im/auth": "^8.3"
+    },
+    "autoload": {
+        "classmap": [
+            "classes",
+            "core",
+            "controllers",
+            "models"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Dummdevka",
+            "email": "87282400+Dummdevka@users.noreply.github.com"
+        }
+    ]
+}

@@ -41,6 +41,8 @@ $app->get('/{page}', [\HomeController::class, 'render']);
 
 $app->get('/lit-search/{word}', [\SearchController::class, 'get_lit']);
 $app->get('/web-search/{word}', [\SearchController::class, 'get_web']);
+$app->post('/signup', [\Auth::class, 'register']);
+$app->post('/login', [\Auth::class, 'log_in']);
 
 
 $app->run();

@@ -1,8 +1,7 @@
-<form action="search" method="get">
-    <input type="text" name="name">
+<form action="login" method="post">
     <input type="text" name="password">
-    <input type="text" name="email">
-    <input type="submit" name="submit" id="register">
+    <input type="text" name="username">
+    <input type="submit" name="submit" id="auth">
 </form>
 
-<a href="register">Register</a>
+<a href="register">Sign up</a>

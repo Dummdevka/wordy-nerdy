@@ -8,6 +8,7 @@
 </head>
 <body>
     <h1>Hurray Wordy!</h1>
+    <div class="container">
         <?php
             if(!empty($args['page'])){
                 require_once 'pages/' . $args['page'] . '.php';
@@ -15,6 +16,7 @@
                 echo 'No page';
             }
         ?>
+    </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="public/assets/main.js"></script>
 </body>
