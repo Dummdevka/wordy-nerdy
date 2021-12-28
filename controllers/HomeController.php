@@ -6,9 +6,9 @@ use Slim\Psr7\Response;
 
 class HomeController extends Controller
 {
-    public function __construct( $view )
+    public function __construct()
     {
-        parent::__construct( $view );
+        parent::__construct();
     }
 
     public function test( Request $request, Response $response, array $args ): ResponseInterface {

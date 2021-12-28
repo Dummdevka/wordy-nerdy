@@ -7,9 +7,15 @@
     <title>Wordy</title>
 </head>
 <body>
-    <h1>Hurray Wordy!</h1>
+    <a href="search"><h1>Hurray Wordy!</h1></a>
     <div class="container">
+        <input type="button" value="Dump books!" id="dump_books">
         <?php
+            if( !empty($_SESSION['auth_logged_in']) ){
+                $logged = $_SESSION['auth_logged_in'];
+            } else {
+                $logged = false;
+            }
             if(!empty($args['page'])){
                 require_once 'pages/' . $args['page'] . '.php';
             } else {

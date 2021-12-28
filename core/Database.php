@@ -6,7 +6,7 @@ class Database
 
     public function __construct( public Array $db_conf ) {
         if( !$this->conn){
-            $this->connect();
+            return $this->connect();
         }
         return $this->conn;
     }
@@ -25,29 +25,23 @@ class Database
                 $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
                 $conn->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
                 $this->conn = $conn;
+                return $this->conn;
             } catch(PDOException $e){
                 echo "Database connection error:" . $e->getMessage();
                 exit;
             }
         }
     }
-    
-    //Check that books are loaded into database
-    public function booksLoaded() {
-        if( !$this->table_exists('wd_books')){
-            //Upload the books
-            $books = new Bookparser();
-            foreach( $books->split(BASEDIR . '/contents')[0] as $str ){
-                $val = $this->conn->quote($str);
-                $this->conn->exec("insert into wd_books(sentence) values ($val);");
-            }
-        }
-    }
 
     public function table_exists( $table ) {
         try{
-            $this->conn->exec('select * from ' . $table . ' where id=1');
-            return true;
+            $res = $this->connect()->query('select * from ' . $table . ' where id=1');
+            $res = $res->fetchAll();
+            if(empty($res)) {
+                return false;
+            } else {
+                return true;
+            }
         } catch( PDOException $e ){
             return false;
         }
@@ -69,31 +63,30 @@ class Database
     
     //Read
     public function get($table, $params = '*', $cond = '') {
-        global $logger;
-        $sql = 'select ' . $params. ' from ' . $table;
+            $sql = 'select ' . $params. ' from ' . $table;
 
-        //Additional conditions
-        if(!empty($cond)) {
-            if( is_array($cond)){
+            //Additional conditions
+            if(!empty($cond)) {
+                if( is_array($cond)){
 
-                $where_str = $this->condition($cond, ' and ');
-            } elseif( is_string($cond) ) {
-        
-                //Custom condition
-                $where_str = $cond;
+                    $where_str = $this->condition($cond, ' and ');
+                } elseif( is_string($cond) ) {
                 
+                    //Custom condition
+                    $where_str = $cond;
+
+                }
+
+                $sql .= ' where ' .$where_str; //Add condition
+                if(is_array($cond)){
+                    $stmt = $this->connect()->prepare($sql);
+                    $stmt->execute($cond); //Execute prepared statement
+                    $res = $stmt->fetchAll(); //Fetch results
+                    return $res;
+                }
             }
-            
-            $sql .= ' where ' .$where_str; //Add condition
-            if(is_array($cond)){
-                $stmt = $this->connect()->prepare($sql);
-                $stmt->execute($cond); //Execute prepared statement
-                $res = $stmt->fetchAll(); //Fetch results
-                return $res;
-            }
-        }
-        $res = $this->connect()->query($sql)->fetchAll(); //Get all ids
-        return $res;
+            $res = $this->connect()->query($sql)->fetchAll(); //Get all ids
+            return $res;
     }
 
     //Create
@@ -109,10 +102,10 @@ class Database
             $vals .= ':' . trim($field);
         }
         //Query
-        $sql = 'insert into ' . $table . '(' . $fields . ') ' . 'values' . '(' .$vals .') returning id';
-        $stmt = $this->prepare_stmt($sql, $vals);
-        $res =  $stmt->fetchColumn();
-        return $res;
+        $sql = 'insert into ' . $table . '(' . $fields . ') ' 
+        . 'values' . '(' .$vals .')';
+        $stmt = $this->prepare_stmt($sql, $values);
+        return $this->connect()->lastInsertId();
     }
 
     //Update

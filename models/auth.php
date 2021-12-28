@@ -3,6 +3,8 @@
 use \Delight\Auth\Auth as AuthLib;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Google\Client;
+use GoogleAuthController;
 
 class Auth extends Model
 {
@@ -71,7 +73,6 @@ class Auth extends Model
         } catch(\Delight\Auth\TooManyRequestsException $e) {
             echo 'Too many requests';
         }
-        header('Location:' . 'http://localhost/wordy/search');
         return $response;
     }
     }
@@ -84,13 +85,14 @@ class Auth extends Model
         } catch( \Delight\Auth\NotLoggedInException $e ){
             exit('Not logged in');
         }
-        return $response;
+        
+        return $response->withStatus(200);
     }
 
     public function delete_user( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         try {
             $this->auth->admin()->deleteUserById($args['id']);
-            $auth->destroySession();
+            $this->auth->destroySession();
         }
         catch (\Delight\Auth\UnknownIdException $e) {
             die('Unknown ID');
@@ -98,6 +100,59 @@ class Auth extends Model
         //$response->getBody()->write('ok');
         return $response;
     }
-}
 
-//Return a page
+    public function email_confirmation( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        try {
+            $this->auth->confirmEmail( $_GET['selector'], $_GET['token'] );
+
+            echo 'Email verified';
+        } catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
+            exit('Invalid token');
+        }
+        catch (\Delight\Auth\TokenExpiredException $e) {
+            exit('Token expired');
+        }
+        catch (\Delight\Auth\UserAlreadyExistsException $e) {
+            exit('Email address already exists');
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            exit('Too many requests');
+        }
+        return $response;
+    } 
+
+    public function reset_password( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        return $response;
+    }
+    public function auth_with_google( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        $client = new Client();
+        $client->setClientId( $this->config['google']['clientID'] );
+        $client->setClientSecret( $this->config['google']['clientSecret'] );
+        $client->setRedirectUri( $this->config['google']['redirectUri'] );
+
+        $client->addScope( "email" );
+        $client->addScope( "profile" );
+
+        header('Location:' . $client->createAuthUrl());
+        exit();
+        
+        //return $response;
+    }
+    public function proceed_google( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        $client = new Client();
+
+        if( isset($_GET['code']) ) {
+            $token = $client->fetchAccessTokenWithAuthCode( $_GET['code'] );
+            $client->setAccessToken( $token['access_token'] );
+
+            $google_oauth = new GoogleAuthController();
+            $google_account_info = $google_oauth->userinfo->get();
+            $email = $google_account_info->email;
+            $username = $google_account_info->username;
+        }
+
+        debug( $email, $username );
+        return $response;
+        
+    }
+}
