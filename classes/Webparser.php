@@ -2,8 +2,10 @@
 
 class Webparser
 {
-	public function __construct( public $urls ) {
-		// code...
+	public $urls;
+	public function __construct() {
+		$config =  & $GLOBALS['config'];
+		$this->urls = $config['websites_url'];
 	}
 
 	public function find_ex( string $req ) {
@@ -20,6 +22,8 @@ class Webparser
 				}
 				
 			}
+		} else {
+			return "Enter a word please!";
 		}
 	}
 

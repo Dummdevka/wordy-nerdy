@@ -12,9 +12,16 @@ class Bookparser
             if( file_exists($src . DS . $filename) && is_readable($src . DS . $filename) ){
                 //Read
                 $content = trim(file_get_contents($src . DS . $filename));
-    
+                
+                $filename = pathinfo($src . DS . $filename , PATHINFO_FILENAME);
                 //YOU CAN ALTER PARSING REGEX HERE
-                array_push($parse, preg_split('/(?<=[.?!;])\s+/', $content, -1, PREG_SPLIT_NO_EMPTY));
+                foreach( preg_split('/(?<=[.?!;])\s+/', $content, -1, PREG_SPLIT_NO_EMPTY) as $str){
+                    $sentence = $str;
+                    $title = $filename;
+                    array_push($parse,( compact( "sentence", "title" )));
+                };
+                
+                array_push($parse);
             }
             return $parse;      
         }

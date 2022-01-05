@@ -62,25 +62,31 @@ $( "#delete_user" ).click(function() {
 $( "#web_search" ).click(function() {
     if( $( "#word_input" ).val().length > 0 ){
         headers['Cache-Control'] = 'private, max-age=1000';
-        console.log(headers);
-        ajax_call("GET", base_url + "/web-search/" + $("#word_input").val(), 
-        function ( res ) {
+        $.get( base_url + "/web-search/" + $("#word_input").val()) 
+        .done(function ( res ) {
             $( ".result_list" ).html(JSON.parse(res)); 
-        });
+        })
+        .fail( function() {
+            error_mess( $('.result_panel'), 'Nothing could be found:(' );
+        })
     } else{
-        alert($( "#word_input" ).val());
+        error_mess( $('.result_panel'), 'Enter a word!');
     }
     
 });
 
 $( "#lit_search" ).click(function() {
     if( $( "#word_input" ).val().length > 0 ){
-        ajax_call("GET", base_url +"/lit-search/" + $("#word_input").val(), 
-        function ( res ) {
+        $.get( base_url +"/lit-search/" + $("#word_input").val())
+        .done( function( res ) {
+            //console.log( res );
             $( ".result_list" ).html(res); 
-        });
+        })
+        .fail( function( res ) {
+            error_mess( $('.result_panel'), 'Nothing could be found:(');
+        })
     } else{
-        alert("Enter a word!");
+        error_mess( $('.result_panel'), 'Enter a word!');
     }
     
 });
