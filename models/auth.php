@@ -4,22 +4,20 @@ use \Delight\Auth\Auth as AuthLib;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Google\Client;
-use GoogleAuthController;
+use Google\Service\Oauth2 as ServiceOauth2;
 
 class Auth extends Model
 {
     public $auth;
     public function __construct() {
         parent::__construct();
-
+        //Auth package
         $this->auth = new AuthLib( $this->db->connect(),null,null,false );
     }
 
     public function register( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         try {
-            //$selector = rand(1000, 8888);
-            //$token = str_shuffle( $_POST['username']);
-            $userId = $this->auth->register( $_POST['email'], $_POST['password'], $_POST['username'], function( $selector, $token ){
+                $userId = $this->auth->register( $_POST['email'], $_POST['password'], $_POST['username'], function( $selector, $token ){
                 $to = '<' . $_POST['email'] . '>';
                 $message = 'Dear ' . $_POST['username'] . "\r\n".
                 'You have recently registered at Wordy, please confirm your password: ' . "\r\n" . 
@@ -30,11 +28,14 @@ class Auth extends Model
 
                 $send = mail( $to, 'Please confirm your registration on Wordy', $message, $header);
                 if ($send) {
-                    var_dump($send);
                     echo 'Confirm your email please';
                 }
 
             });
+            //Checking if there are any warnings
+            if( !empty( $args['message'] )){
+                echo $args['message'];
+            }
             echo 'We have signed up a new user with the ID ' . $userId;
 
         } catch(\Delight\Auth\InvalidEmailException $e) {
@@ -85,8 +86,7 @@ class Auth extends Model
         } catch( \Delight\Auth\NotLoggedInException $e ){
             exit('Not logged in');
         }
-        
-        return $response->withStatus(200);
+        return $response;
     }
 
     public function delete_user( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
@@ -97,7 +97,6 @@ class Auth extends Model
         catch (\Delight\Auth\UnknownIdException $e) {
             die('Unknown ID');
         }
-        //$response->getBody()->write('ok');
         return $response;
     }
 
@@ -124,35 +123,35 @@ class Auth extends Model
     public function reset_password( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         return $response;
     }
+
+    //Authentication with Google Account
     public function auth_with_google( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         $client = new Client();
         $client->setClientId( $this->config['google']['clientID'] );
         $client->setClientSecret( $this->config['google']['clientSecret'] );
         $client->setRedirectUri( $this->config['google']['redirectUri'] );
-
         $client->addScope( "email" );
         $client->addScope( "profile" );
 
-        header('Location:' . $client->createAuthUrl());
-        exit();
-        
-        //return $response;
-    }
-    public function proceed_google( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
-        $client = new Client();
-
-        if( isset($_GET['code']) ) {
+        if( isset( $_GET['code'] ) ){
             $token = $client->fetchAccessTokenWithAuthCode( $_GET['code'] );
-            $client->setAccessToken( $token['access_token'] );
 
-            $google_oauth = new GoogleAuthController();
+            $client->setAccessToken( $token['access_token'] );
+            $google_oauth = new ServiceOauth2($client);
             $google_account_info = $google_oauth->userinfo->get();
             $email = $google_account_info->email;
-            $username = $google_account_info->username;
+            $name = $google_account_info->name;
+            //Storing data in POST in order to create a user
+            $_POST['username'] = $name;
+            $_POST['email'] = $email;
+            $_POST['password'] = $email;
+            //Warning the user
+            $args['message'] = 'Your password is ' . $email . ' ! Please make sure to change it';
+            $this->register( $request, $response, $args);
+        } else {
+            header('Location:' . $client->createAuthUrl());
+            exit();
         }
-
-        debug( $email, $username );
         return $response;
-        
     }
 }
