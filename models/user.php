@@ -186,4 +186,43 @@ class User extends Model
 
         return $response;
     }
+
+    public function reset_email( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        try {
+            if ($this->auth->reconfirmPassword($_POST['password'])) {
+                $this->auth->changeEmail($_POST['new_email'], function ($selector, $token) {
+                    $to = '<' . $_POST['new_email'] . '>';
+                    $message = 'Dear ' . $this->auth->getUsername() . "\r\n".
+                    'You have recently registered at Wordy, please confirm your password: ' . "\r\n" . 
+                    'http:\\localhost\wordy\email_confirm?selector=' . \urlencode($selector) . '&token=' . \urlencode($token) . "\r\n" 
+                    . 'Thank you for choosing Wordy !' . "\r\n";
+                    $header = 'From:<trake1524@gmail.com>' . "\r\n" 
+                    . 'Reply-to: <trake1524@gmail.com>';
+
+                    $send = mail( $to, 'Please confirm your registration on Wordy', $message, $header);
+                });
+                $response->getBody()->write( 'Confirm your new email' );
+                return $response;
+            }
+            else {
+                $response->getBody()->write( 'Wrong pass :(' );
+                return $response;
+            }
+        }
+        catch (\Delight\Auth\InvalidEmailException $e) {
+            die('Invalid email address');
+        }
+        catch (\Delight\Auth\UserAlreadyExistsException $e) {
+            die('Email address already exists');
+        }
+        catch (\Delight\Auth\EmailNotVerifiedException $e) {
+            die('Account not verified');
+        }
+        catch (\Delight\Auth\NotLoggedInException $e) {
+            die('Not logged in');
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            die('Too many requests');
+        }
+    }
 }

@@ -26,6 +26,10 @@
             let old_data = $('<input type="text" name="old_'+ placeholder+'" class="old_'+ placeholder+'" placeholder="Old '+ placeholder+'">');
             block.append(old_data);
         }
+        if( placeholder == 'email'){
+            let old_data = $('<input type="text" name="password" class="password" placeholder="Password">');
+            block.append(old_data);
+        }
         block.append(new_data);
         block.append(save_data);
     };

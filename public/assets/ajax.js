@@ -119,4 +119,21 @@ $( document ).ready( function() {
             error_mess( $( '.profile_password' ), 'Please come up with something a bit longer (8 characters :-))' );
         }
     })
+
+    $( document ).on( "click", "#save_email", function() {
+        if( $(this).prev().val().length > 7 ) {
+            $.post( base_url + "/reset_email", { password: $( ".password").val(),
+                 new_email: $( ".new_email" ).val()})
+                .done( function( res ) {
+                    console.log( res );
+                    error_mess( $( '.profile_email' ), res );
+                    $( '.profile_email' ).html() = '';
+                })
+                .fail( function( res ) {
+                    error_mess( $( '.profile_email' ), res.statusText );
+                })
+        } else {
+            error_mess( $( '.profile_email' ), 'An email is usually a bit longer :)' );
+        }
+    })
 })
