@@ -1,0 +1,24 @@
+-- Parse books
+    Need: directory
+    Read each file and do something with it
+
+-- Look for a word usage
+
+-- Interaction with database
+    Look for a word
+    Add content to database dynamically ( one book - one table )
+
+-- Check that books are loaded
+    Index.php Database()->booksLoaded()
+    booksLoaded: new BookParser(
+    )
+
+-- Add schema and seed the table onload
+
+-- WP rest API 
+
+-- Music lyrics
+
+//DO NOT REPEAT
+//CHECK BY ID 1??
+//HTACCESS
