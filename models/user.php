@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Google\Client;
 use Google\Service\Oauth2 as ServiceOauth2;
 
-class Auth extends Model
+class User extends Model
 {
     public $auth;
     public function __construct() {
@@ -152,6 +152,23 @@ class Auth extends Model
             header('Location:' . $client->createAuthUrl());
             exit();
         }
+        return $response;
+    }
+
+    public function reset_username( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        if( !empty($_POST['new_username'])&& strlen($_POST['new_username'])>7 ){
+            //Check that username is unique
+            if( empty($this->id(['username' => $_POST['new_username']]))){
+                //debug( $this->id( ['username' => $_POST['new_username']]));
+                $userId = $this->auth->getUserId();
+                //Update username
+                $this->update( $userId, ['username' => $_POST['new_username']]);
+                //Update session
+                $_SESSION['auth_username'] = $_POST['new_username'];
+            } else {
+                return $response->withStatus(422, 'Username is possesed');
+            }
+        } 
         return $response;
     }
 }
