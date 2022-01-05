@@ -3,13 +3,10 @@ let headers = {
 };
 const base_url = 'http://localhost/wordy';
 function error_mess( block, message) {
-    //console.log( block.children);
     if (block.children(":first").hasClass( "error" )){
-        console.log( 'haha');
         block.children(":first").html( message );
     } else {
     let err = $('<p class="error">'+message+'</p>');
-    console.log( err );
     block.prepend( err );
     }
 }
@@ -96,15 +93,30 @@ $( document ).ready( function() {
         if( $(this).prev().val().length > 7 ){
             $.post( base_url + "/reset_username", { new_username: $(this).prev().val() })
             .done( function( res ) {
-                console.log( res );
                 window.location.reload();
             })
             .fail( function( res ) {
                 error_mess( $( '.profile_username' ), res.statusText);
             });
             
-        }else {
+        } else {
             error_mess( $( '.profile_username' ), 'Please come up with something a bit longer (8 characters :-))' );
         } 
 });
+
+    $( document ).on("click", "#save_password", function() {
+        if( $(this).prev().val().length > 7 ) {
+            $.post( base_url + "/reset_password", { old_password: $( ".old_password").val(),
+                 new_password: $( ".new_password" ).val()})
+                .done( function( res ) {
+                    console.log( res );
+                    window.location.reload();
+                })
+                .fail( function( res ) {
+                    error_mess( $( '.profile_password' ), res.statusText );
+                })
+        } else {
+            error_mess( $( '.profile_password' ), 'Please come up with something a bit longer (8 characters :-))' );
+        }
+    })
 })

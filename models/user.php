@@ -120,10 +120,6 @@ class User extends Model
         return $response;
     } 
 
-    public function reset_password( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
-        return $response;
-    }
-
     //Authentication with Google Account
     public function auth_with_google( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         $client = new Client();
@@ -169,6 +165,25 @@ class User extends Model
                 return $response->withStatus(422, 'Username is possesed');
             }
         } 
+        return $response;
+    }
+
+    public function reset_password( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        try {
+            $this->auth->changePassword($_POST['old_password'], $_POST['new_password']);
+        
+            echo 'Password has been changed';
+        }
+        catch (\Delight\Auth\NotLoggedInException $e) {
+            return $response->withStatus( 403, 'Not logged in' );
+        }
+        catch (\Delight\Auth\InvalidPasswordException $e) {
+            return $response->withStatus( 403, 'Invalid password' );
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            return $response->withStatus( 403, 'Too many requests' );
+        }
+
         return $response;
     }
 }

@@ -15,7 +15,7 @@ class Book extends Model
     public function get_sentence( string $str ) {
             $cond = "instr(`sentence`, '{$str}')>0;";
             $res = $this->db->get('wd_books', 'sentence, title', $cond);
-            return !$res ? "Not found" : $res;
+            return !$res ? "Nothing could be found" : $res;
     }
 
      //Check that books are loaded into database
