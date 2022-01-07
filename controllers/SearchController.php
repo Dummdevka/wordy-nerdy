@@ -1,5 +1,8 @@
 <?php
+namespace controllers;
 
+use models\Book;
+use parsers\Webparser;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;

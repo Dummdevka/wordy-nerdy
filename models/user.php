@@ -1,4 +1,5 @@
 <?php
+namespace models;
 
 use \Delight\Auth\Auth as AuthLib;
 use Psr\Http\Message\RequestInterface;
@@ -30,6 +31,7 @@ class User extends Model
                 if ($send) {
                     echo 'Confirm your email please';
                 }
+                
 
             });
             //Checking if there are any warnings
@@ -224,5 +226,9 @@ class User extends Model
         catch (\Delight\Auth\TooManyRequestsException $e) {
             die('Too many requests');
         }
+    }
+
+    public function forgot_password() {
+
     }
 }
