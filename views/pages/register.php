@@ -2,7 +2,8 @@
     if ( $logged ) {
         header( 'Location: search' );
         exit();
-    } else {
+    } else { 
+        
 ?>
 <form action="signup" method="post">
     <input type="text" name="email">
@@ -12,7 +13,7 @@
 </form>
 
 <a href="auth">Auth</a>
-<a href="auth_google">Register with Google?</a>
+<a href="auth_with_google">Register with Google?</a>
 <?php
     }
 ?>

@@ -136,4 +136,14 @@ $( document ).ready( function() {
             error_mess( $( '.profile_email' ), 'An email is usually a bit longer :)' );
         }
     })
+
+    $( document ).on( "click", '.resend_button', function() {
+        $.get( base_url + '/resend')
+        .done( function( res ) {
+            console.log(res)
+        })
+        .fail( function() {
+            console.log( 'something went wrong' );
+        })
+    })
 })

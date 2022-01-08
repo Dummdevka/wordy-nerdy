@@ -20,6 +20,7 @@ class MailController extends Controller {
         $this->mail->isSMTP();
         //Set host
         $this->mail->Host = 'smtp.gmail.com';
+        $this->mail->SMTPAuth = 'true';
         //Set port
         $this->mail->Port = '587';
         //Security
@@ -29,11 +30,14 @@ class MailController extends Controller {
         $this->mail->Password = $this->password;
         //Subject
         $this->mail->Subject = $subject;
+        //Enable HTML
+        $this->mail->isSMTP();
         //Body
-        $this->mail->Body = $this->config['mail_samples'][$body];
+        $this->mail->Body = $body;
+        $this->mail->addAddress( $to );
         //Append link if there is any
         if ( !empty($link)) {
-            $this->mail->Body += $link;
+            $this->mail->Body .= '<a href="'.$link.'">'.$link.'</a>';
         }
         //Send the letter
         if ( $this->mail->Send() ) {
