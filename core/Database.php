@@ -1,5 +1,8 @@
 <?php
-global $logger;
+namespace database;
+use PDO;
+use PDOException;
+
 class Database
 {
     protected $conn = false;

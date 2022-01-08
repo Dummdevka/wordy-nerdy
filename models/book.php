@@ -1,5 +1,7 @@
 <?php
+namespace models;
 
+use parsers\Bookparser;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

@@ -1,4 +1,5 @@
 <?php
+namespace models;
 
 use \Delight\Auth\Auth as AuthLib;
 use Psr\Http\Message\RequestInterface;
@@ -9,119 +10,119 @@ use Google\Service\Oauth2 as ServiceOauth2;
 class User extends Model
 {
     public $auth;
-    public function __construct() {
+    public function __construct () {
         parent::__construct();
         //Auth package
         $this->auth = new AuthLib( $this->db->connect(),null,null,false );
     }
 
-    public function register( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function signup ( $mail_func ) {
         try {
-                $userId = $this->auth->register( $_POST['email'], $_POST['password'], $_POST['username'], function( $selector, $token ){
-                $to = '<' . $_POST['email'] . '>';
-                $message = 'Dear ' . $_POST['username'] . "\r\n".
-                'You have recently registered at Wordy, please confirm your password: ' . "\r\n" . 
-                'http:\\localhost\wordy\email_confirm?selector=' . $selector . '&token=' . $token . "\r\n" 
-                . 'Thank you for choosing Wordy !' . "\r\n";
-                $header = 'From:<example@gmail.com>' . "\r\n" 
-                . 'Reply-to: <example@gmail.com>';
-
-                $send = mail( $to, 'Please confirm your registration on Wordy', $message, $header);
-                if ($send) {
-                    echo 'Confirm your email please';
-                }
-
-            });
-            //Checking if there are any warnings
-            if( !empty( $args['message'] )){
-                echo $args['message'];
-            }
-            echo 'We have signed up a new user with the ID ' . $userId;
+            $userId = $this->auth->register( $_POST['email'], 
+                $_POST['password'], 
+                $_POST['username'], 
+                function( $selector, $token ) use ($mail_func) {
+                    
+                    $mail_func( $_POST['email'], 
+                    'Registration on Wordy', 
+                    $this->config['mail_samples']['register'],
+                    'http:\\localhost\wordy\email_confirm?&redirect=auth&selector='
+                    . \urlencode($selector) 
+                    . '&token=' . \urlencode($token));
+                });
+            $_SESSION['temp_email'] = $_POST['email'];
+            return true;
 
         } catch(\Delight\Auth\InvalidEmailException $e) {
             exit('Invalid email');
         } catch(\Delight\Auth\InvalidPasswordException $e) {
             exit('Invalid password');
         } catch(\Delight\Auth\UserAlreadyExistsException $e) {
-            exit('User already exists');
+            exit( 'User exists' );
         } catch(\Delight\Auth\TooManyRequestsException $e) {
             exit('Too many requests');
         }
-        return $response;
     }
-
-    public function log_in( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function login () {
         if ($this->auth->isLoggedIn()) {
-            echo 'User is signed in';
-            exit();
+            return 'The user is logged in';
         }
         else {
-        try {
-            //Remebering the user
-            if( !empty($_POST['remember']) && $_POST['remember'] == 1 ){
-                $rememberDuration = (int) (60*60*24*365);
-            } else {
-                $rememberDuration = null;
+            try {
+                //Remebering the user
+                if( !empty($_POST['remember']) && $_POST['remember'] == 1 ){
+                    $rememberDuration = (int) (60*60*24*365);
+                } else {
+                    $rememberDuration = null;
+                }
+                //Log the user in
+                $this->auth->loginWithUsername( $_POST['username'], $_POST['password'], $rememberDuration);  
+            } catch(\Delight\Auth\UnknownUsernameException $e) {
+                return $e->getMessage();
+            } catch(\Delight\Auth\InvalidPasswordException $e) {
+                return $e->getMessage();
+            } catch(\Delight\Auth\EmailNotVerifiedException $e) {
+                return $e->getMessage();
+            } catch(\Delight\Auth\TooManyRequestsException $e) {
+                return $e->getMessage();
             }
-            //Log the user in
-            $this->auth->loginWithUsername( $_POST['username'], $_POST['password'], $rememberDuration);  
-        } catch(\Delight\Auth\UnknownUsernameException $e) {
-            echo 'Unknown username';
-        } catch(\Delight\Auth\InvalidPasswordException $e) {
-            echo 'Wrong password';
-        } catch(\Delight\Auth\EmailNotVerifiedException $e) {
-            echo 'Verify your email please!';
-        } catch(\Delight\Auth\TooManyRequestsException $e) {
-            echo 'Too many requests';
+            return true;
         }
-        return $response;
-    }
     }
 
-    public function logout( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function logout() {
         
         try {
             $this->auth->logOutEverywhere();
-            echo 'Logged out';
+            return true;
         } catch( \Delight\Auth\NotLoggedInException $e ){
-            exit('Not logged in');
+            return false;
         }
-        return $response;
     }
 
-    public function delete_user( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function deleteUser( $id ) {
         try {
-            $this->auth->admin()->deleteUserById($args['id']);
+            $this->auth->admin()->deleteUserById($id);
             $this->auth->destroySession();
         }
         catch (\Delight\Auth\UnknownIdException $e) {
-            die('Unknown ID');
+            return $e->getMessage();
         }
-        return $response;
+        return true;
     }
 
-    public function email_confirmation( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function emailConfirmation() {
+        
         try {
-            $this->auth->confirmEmail( $_GET['selector'], $_GET['token'] );
-
-            echo 'Email verified';
+            //For forgot password function
+            if ( isset($_GET['redirect'])&&strcmp($_GET['redirect'], 'new_pass') === 0) {
+                $this->auth->canResetPasswordOrThrow($_GET['selector'], $_GET['token']);
+                $_POST['seletor'] = $_GET['selector'];
+                $_POST['token'] = $_GET['token'];
+            } else {
+                //Confirm email
+                $this->auth->confirmEmail( $_GET['selector'], $_GET['token'] );
+            }
+                if ( isset( $_SESSION['temp_email'] )) {
+                    unset( $_SESSION['temp_email'] );
+                }
+            return true;
         } catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
-            exit('Invalid token');
+            exit ( 'Invalid url' );
         }
         catch (\Delight\Auth\TokenExpiredException $e) {
-            exit('Token expired');
+            exit ( 'Token expired' );
         }
         catch (\Delight\Auth\UserAlreadyExistsException $e) {
-            exit('Email address already exists');
+            exit ( 'User already exists' );
         }
         catch (\Delight\Auth\TooManyRequestsException $e) {
-            exit('Too many requests');
+            exit ( 'Too many requests' );
         }
-        return $response;
     } 
 
     //Authentication with Google Account
-    public function auth_with_google( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function auth_with_google( $mail_func ) {
         $client = new Client();
         $client->setClientId( $this->config['google']['clientID'] );
         $client->setClientSecret( $this->config['google']['clientSecret'] );
@@ -131,7 +132,7 @@ class User extends Model
 
         if( isset( $_GET['code'] ) ){
             $token = $client->fetchAccessTokenWithAuthCode( $_GET['code'] );
-
+            
             $client->setAccessToken( $token['access_token'] );
             $google_oauth = new ServiceOauth2($client);
             $google_account_info = $google_oauth->userinfo->get();
@@ -142,84 +143,139 @@ class User extends Model
             $_POST['email'] = $email;
             $_POST['password'] = $email;
             //Warning the user
-            $args['message'] = 'Your password is ' . $email . ' ! Please make sure to change it';
-            $this->register( $request, $response, $args);
+            return $this->signup( $mail_func );
         } else {
             header('Location:' . $client->createAuthUrl());
             exit();
         }
-        return $response;
     }
-
-    public function reset_username( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
-        if( !empty($_POST['new_username'])&& strlen($_POST['new_username'])>7 ){
+    public function resetUsername () {
             //Check that username is unique
             if( empty($this->id(['username' => $_POST['new_username']]))){
-                //debug( $this->id( ['username' => $_POST['new_username']]));
                 $userId = $this->auth->getUserId();
                 //Update username
                 $this->update( $userId, ['username' => $_POST['new_username']]);
                 //Update session
                 $_SESSION['auth_username'] = $_POST['new_username'];
+                return true;
             } else {
-                return $response->withStatus(422, 'Username is possesed');
+                return false;
             }
-        } 
-        return $response;
     }
-
-    public function reset_password( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function resetPassword () {
         try {
             $this->auth->changePassword($_POST['old_password'], $_POST['new_password']);
         
-            echo 'Password has been changed';
+            return true;
         }
         catch (\Delight\Auth\NotLoggedInException $e) {
-            return $response->withStatus( 403, 'Not logged in' );
+            return $e->getMessage();
         }
         catch (\Delight\Auth\InvalidPasswordException $e) {
-            return $response->withStatus( 403, 'Invalid password' );
+            return $e->getMessage();
         }
         catch (\Delight\Auth\TooManyRequestsException $e) {
-            return $response->withStatus( 403, 'Too many requests' );
+            return $e->getMessage();
         }
-
-        return $response;
     }
 
-    public function reset_email( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function resetEmail ( $mail_func ) {
         try {
             if ($this->auth->reconfirmPassword($_POST['password'])) {
-                $this->auth->changeEmail($_POST['new_email'], function ($selector, $token) {
-                    $to = '<' . $_POST['new_email'] . '>';
-                    $message = 'Dear ' . $this->auth->getUsername() . "\r\n".
-                    'You have recently registered at Wordy, please confirm your password: ' . "\r\n" . 
-                    'http:\\localhost\wordy\email_confirm?selector=' . \urlencode($selector) . '&token=' . \urlencode($token) . "\r\n" 
-                    . 'Thank you for choosing Wordy !' . "\r\n";
-                    $header = 'From:<trake1524@gmail.com>' . "\r\n" 
-                    . 'Reply-to: <trake1524@gmail.com>';
-
-                    $send = mail( $to, 'Please confirm your registration on Wordy', $message, $header);
+                $this->auth->changeEmail($_POST['new_email'], function ($selector, $token) use ($mail_func) {
+                    $mail_func ( $_POST['new_email'], 
+                     'Wordy Email Reset',
+                     $this->config['mail_samples']['new_email'], 
+                     'http:\\localhost\wordy\email_confirm?selector='
+                     . \urlencode($selector) 
+                     . '&token=' . \urlencode($token)) . '&redirect=dashboard';
                 });
-                $response->getBody()->write( 'Confirm your new email' );
-                return $response;
+                return true;
             }
             else {
-                $response->getBody()->write( 'Wrong pass :(' );
-                return $response;
+                return false;
             }
         }
         catch (\Delight\Auth\InvalidEmailException $e) {
-            die('Invalid email address');
+            return $e->getMessage();
         }
         catch (\Delight\Auth\UserAlreadyExistsException $e) {
-            die('Email address already exists');
+            return $e->getMessage();
         }
         catch (\Delight\Auth\EmailNotVerifiedException $e) {
-            die('Account not verified');
+            return $e->getMessage();
         }
         catch (\Delight\Auth\NotLoggedInException $e) {
-            die('Not logged in');
+            return $e->getMessage();
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            return $e->getMessage();
+        }
+    }
+    public function resendEmail ( $email, $mail_func ) {
+        try {
+            $this->auth->resendConfirmationForEmail($email, function ($selector, $token) use ( $email, $mail_func ) {
+                $mail_func( $email, 
+                    'Registration on Wordy', 
+                    $this->config['mail_samples']['register'],
+                    'http:\\localhost\wordy\email_confirm?redirect=auth&selector='
+                    . \urlencode($selector) 
+                    . '&token=' . \urlencode($token));
+            });
+            return true;
+        }
+        catch (\Delight\Auth\ConfirmationRequestNotFound $e) {
+            exit('No earlier request found that could be re-sent');
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            exit('There have been too many requests -- try again later');
+        }
+    }
+    public function forgotPassword( $mail_func ) {
+        try {
+            $this->auth->forgotPassword($_POST['email'], function ($selector, $token) use ( $mail_func ) {
+                $mail_func( $_POST['email'], 
+                'Forgot password on Wordy', 
+                $this->config['mail_samples']['forgot_password'],
+                'http:\\localhost\wordy\email_confirm?redirect=new_pass&selector='
+                . \urlencode($selector) 
+                . '&token=' . \urlencode($token));
+            });
+            return true;
+        }
+        catch (\Delight\Auth\InvalidEmailException $e) {
+            exit('Invalid email address');
+        }
+        catch (\Delight\Auth\EmailNotVerifiedException $e) {
+            exit('Email not verified');
+        }
+        catch (\Delight\Auth\ResetDisabledException $e) {
+            exit('Password reset is disabled');
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            exit('Too many requests');
+        } 
+    } 
+    public function setNewPassword () {
+        try {
+            $this->auth->resetPassword($_COOKIE['selector'], 
+             $_COOKIE['token'], 
+             $_POST['new_password']);
+            setcookie('token', null, time() - 1); 
+            setcookie('selector', null, time() - 1); 
+            return true;
+        }
+        catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
+            die('Invalid token');
+        }
+        catch (\Delight\Auth\TokenExpiredException $e) {
+            die('Token expired');
+        }
+        catch (\Delight\Auth\ResetDisabledException $e) {
+            die('Password reset is disabled');
+        }
+        catch (\Delight\Auth\InvalidPasswordException $e) {
+            die('Invalid password');
         }
         catch (\Delight\Auth\TooManyRequestsException $e) {
             die('Too many requests');

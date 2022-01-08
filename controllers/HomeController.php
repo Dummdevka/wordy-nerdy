@@ -1,4 +1,5 @@
 <?php
+namespace controllers;
 
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;

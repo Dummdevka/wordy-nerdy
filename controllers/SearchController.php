@@ -1,5 +1,8 @@
 <?php
+namespace controllers;
 
+use models\Book;
+use parsers\Webparser;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
@@ -18,6 +21,8 @@ class SearchController extends Controller
         //New Model instance
         $book = new Book();
         //Query database
+        //$response = $response->getBody();
+        //$newResponse = $response->withJson($book->get_sentence($args['word'] ));
         $response->getBody()->write(json_encode($book->get_sentence($args['word'])));
         return $response;
     }
