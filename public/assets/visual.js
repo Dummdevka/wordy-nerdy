@@ -1,8 +1,4 @@
-// $( document ).ready(function() {
-//     $( "#save_username" ).click(function() {
-//         alert('hahah');
-//     });
-// })
+
     $( '#ch_username' ).click(function() {
         ch_userinfo($(this), 'username');
     });

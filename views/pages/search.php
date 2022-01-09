@@ -17,12 +17,11 @@
     
     
     <input type="text" id="word_input" placeholder="Look for...">
-    <button type="button" class="query_word">Ok!</button>
+    <button type="button" id="lit_search" class="query_word">Literature</button>
+    <button type="button" id="web_search" class="query_word">Web</button>
 </div>
 <div class="result">
     <div class="result_panel">
-        <span id="lit_search">Literature</span>
-        <span id="web_search">Web</span>
     </div>
     <div class="result_list"></div>
 </div>

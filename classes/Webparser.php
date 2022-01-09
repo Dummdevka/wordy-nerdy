@@ -13,6 +13,7 @@ class Webparser
 		if( !empty($req)){
 			foreach( $this->urls as $url ){
 				$collection = $this->get_data($url . 'wp-json/wp/v2/search?search=' . $req);
+				var_dump( $collection );
 				if( !empty($collection) ) {
 					$content = $this->get_data($collection[0]->_links->self[0]->href);
 
