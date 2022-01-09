@@ -13,6 +13,21 @@ return [
     //Wordpress src
     'websites_url' => [
         'https://reala.co/',
+
+        //Literature
+        'https://www.janefriedman.com/',
+        'http://bookriot.com/',
+        'https://therumpus.net/',
+
+        //Fashion
+        'https://thedaileigh.com/',
+        'http://thefashionguitar.com/',
+        'https://girlwithcurves.com/',
+
+        //Nature
+        'http://natureinmind.ie/',
+        'https://timswww.com.au/',
+        'https://www.explorenature.org/'
     ],
     //Google auth data
     'google' => [

@@ -16,7 +16,7 @@ class Book extends Model
     //Search sentences containing a word
     public function get_sentence( string $str ) {
             $cond = "instr(`sentence`, '{$str}')>0;";
-            $res = $this->db->get('wd_books', 'sentence, title', $cond);
+            $res = $this->db->get( $this->table_name, 'sentence, title', $cond);
             return !$res ? "Nothing could be found" : $res;
     }
 
@@ -24,7 +24,7 @@ class Book extends Model
      public function booksLoaded( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         if( $this->db->table_not_empty('books')){
             //Delete all previous book quotes
-            $this->delete_all();
+            $this->truncate();
         }
         //Upload the books
         $books = new Bookparser();

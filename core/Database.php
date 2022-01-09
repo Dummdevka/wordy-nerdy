@@ -36,7 +36,7 @@ class Database
         }
     }
 
-    public function table_exists( $table ) {
+    public function table_not_empty( $table ) {
         try{
             $res = $this->connect()->query('select * from ' . $table . ' where id=1');
             $res = $res->fetchAll();
@@ -92,9 +92,6 @@ class Database
             return $res;
     }
 
-    //Create
-    //Fields - STRING of col names separated with a ,
-    //Values - ARRAY col=>val
     public function create($table, $fields, $values) {    
         //Forming prepared statement
         $vals = '';
@@ -124,6 +121,13 @@ class Database
     public function delete($table, $id) {
         $sql = 'delete from ' . $table . ' where id=:id';
         return $this->prepare_stmt($sql,[':id'=>$id]);
+    }
+    
+    //Delete table contents
+    public function truncate ( $table ) {
+        $sql = 'truncate ' . $table;
+                'alter table ' . $table . ' auto_increment=1';
+        return $this->connect()->exec( $sql );
     }
 
     public function prepare_stmt($sql, array $vals) {

@@ -76,8 +76,13 @@ $( "#lit_search" ).click(function() {
     if( $( "#word_input" ).val().length > 0 ){
         $.get( base_url +"/lit-search/" + $("#word_input").val())
         .done( function( res ) {
-            //console.log( res );
-            $( ".result_list" ).html(res); 
+            let content = JSON.parse( res );
+            content.forEach(ex => {
+                console.log( ex.sentence );
+                let p_sentence = $( '<p class="lit_ex_sentence">' + ex.sentence + '<q>' + ex.title + '</q></p>');
+                $( ".result_list" ).append( p_sentence );
+            });
+            
         })
         .fail( function( res ) {
             error_mess( $('.result_panel'), 'Nothing could be found:(');
