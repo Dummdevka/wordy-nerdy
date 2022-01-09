@@ -30,7 +30,7 @@ class SearchController extends Controller
         }
         //Parse WordPress websites
         $web = new Webparser();
-        $response->getBody()->write(json_encode($web->find_ex($args['word'])));
+        $response->getBody()->write($web->find_ex($args['word']));
         return $response->withStatus(200);
     }
 }

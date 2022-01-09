@@ -25,3 +25,4 @@
     </div>
     <div class="result_list"></div>
 </div>
+<script src="public/assets/refresh.js"></script>

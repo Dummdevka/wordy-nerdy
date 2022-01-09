@@ -57,26 +57,33 @@ $( "#delete_user" ).click(function() {
 });
 
 $( "#web_search" ).click(function() {
+    //Changing button while waiting
+    $(this).html('Waiting...');
+    $(this).prev().prop('disabled', true);  
+
     if( $( "#word_input" ).val().length > 0 ){
         $.get( base_url + "/web-search/" + $("#word_input").val()) 
         .done(function ( res ) {
-            let content = JSON.parse( res );
-            console.log(content);
+            $( "#web_search" ).html('Web');
+            $( "#web_search" ).prev().prop('disabled', false);
+            $( ".result_list" ).html('');
+
+            let content = $.parseJSON( res );
             content.forEach(ex => {
-                //let p_sentence = '';
                 if ($.isArray(ex.example) == true ) {
-                    
                     ex.example.forEach(example => {
                         let p_sentence = $( '<p class="web_ex_sentence">' + example + '<a href="' + ex.url + '">' + ex.url + '</a></p>');
-                        $( ".result" ).append( p_sentence );
+                        $( ".result_list" ).append( p_sentence );
                     });
                 } else {
                     let p_sentence = $( '<hr> <p class="web_ex_sentence">' + ex.example + '<a href="' + ex.url + '">' + ex.url + '</a></p>');
                 }
             })
-            $( ".result_list" ).html(JSON.parse(res)); 
+            //$( ".result_list" ).html(JSON.parse(res)); 
         })
         .fail( function() {
+            $( "#web_search" ).html('Web');
+            $( "#web_search" ).prev().prop('disabled', false);
             error_mess( $('.result_panel'), 'Nothing could be found:(' );
         })
     } else{
@@ -86,9 +93,17 @@ $( "#web_search" ).click(function() {
 });
 
 $( "#lit_search" ).click(function() {
+    //Changing button while waiting
+    $(this).html('Waiting...');
+    $(this).next().prop('disabled', true); 
+
     if( $( "#word_input" ).val().length > 0 ){
         $.get( base_url +"/lit-search/" + $("#word_input").val())
         .done( function( res ) {
+            //Changing button while waiting
+            $( "#lit_search" ).html('Literature');
+            $( "#lit_search" ).next().prop('disabled', false); 
+            $( ".result_list" ).html('');
             let content = JSON.parse( res );
             content.forEach(ex => {
                 let p_sentence = $( '<p class="lit_ex_sentence">' + ex.sentence + '<q>' + ex.title + '</q></p>');
@@ -97,6 +112,9 @@ $( "#lit_search" ).click(function() {
             
         })
         .fail( function( res ) {
+            //Changing button while waiting
+            $( "#lit_search" ).html('Literature');
+            $( "#lit_search" ).next().prop('disabled', false); 
             error_mess( $('.result_panel'), 'Nothing could be found:(');
         })
     } else{
