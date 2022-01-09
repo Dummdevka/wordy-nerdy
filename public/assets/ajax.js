@@ -58,9 +58,22 @@ $( "#delete_user" ).click(function() {
 
 $( "#web_search" ).click(function() {
     if( $( "#word_input" ).val().length > 0 ){
-        headers['Cache-Control'] = 'private, max-age=1000';
         $.get( base_url + "/web-search/" + $("#word_input").val()) 
         .done(function ( res ) {
+            let content = JSON.parse( res );
+            console.log(content);
+            content.forEach(ex => {
+                //let p_sentence = '';
+                if ($.isArray(ex.example) == true ) {
+                    
+                    ex.example.forEach(example => {
+                        let p_sentence = $( '<p class="web_ex_sentence">' + example + '<a href="' + ex.url + '">' + ex.url + '</a></p>');
+                        $( ".result" ).append( p_sentence );
+                    });
+                } else {
+                    let p_sentence = $( '<hr> <p class="web_ex_sentence">' + ex.example + '<a href="' + ex.url + '">' + ex.url + '</a></p>');
+                }
+            })
             $( ".result_list" ).html(JSON.parse(res)); 
         })
         .fail( function() {
@@ -78,7 +91,6 @@ $( "#lit_search" ).click(function() {
         .done( function( res ) {
             let content = JSON.parse( res );
             content.forEach(ex => {
-                console.log( ex.sentence );
                 let p_sentence = $( '<p class="lit_ex_sentence">' + ex.sentence + '<q>' + ex.title + '</q></p>');
                 $( ".result_list" ).append( p_sentence );
             });

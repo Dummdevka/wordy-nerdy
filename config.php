@@ -12,8 +12,6 @@ return [
     ],
     //Wordpress src
     'websites_url' => [
-        'https://reala.co/',
-
         //Literature
         'https://www.janefriedman.com/',
         'http://bookriot.com/',
