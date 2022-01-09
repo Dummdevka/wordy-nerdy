@@ -22,16 +22,15 @@ class Book extends Model
 
      //Check that books are loaded into database
      public function booksLoaded( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
-        if( !$this->db->table_exists('wd_books')){
-            //Upload the books
-            $books = new Bookparser();
-            foreach( $books->split(BASEDIR . '/contents') as $example ){
-                //$example['senetence'] = 
-                $this->create( $example );
-                //$val = $this->conn->quote($str);
-                //$this->conn->exec("insert into wd_books(sentence) values ($val);");
-            }
+        if( $this->db->table_not_empty('books')){
+            //Delete all previous book quotes
+            $this->delete_all();
         }
-        return $response;
+        //Upload the books
+        $books = new Bookparser();
+        foreach( $books->split(BASEDIR . '/contents') as $example ){
+            $this->create( $example );
+        }
+        return $response->withStatus(201);
     }
 }
