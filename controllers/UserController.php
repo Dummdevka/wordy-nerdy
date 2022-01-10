@@ -150,4 +150,7 @@ class UserController extends Controller
             return $response->withStatus(422, 'Some fields are empty');
         }
     }
+    public function add_favorite ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        debug( $_POST );
+    }
 }

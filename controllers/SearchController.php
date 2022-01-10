@@ -2,6 +2,7 @@
 namespace controllers;
 
 use models\Book;
+use models\Web_example;
 use parsers\Webparser;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -29,8 +30,8 @@ class SearchController extends Controller
             return "Enter a word please!";
         }
         //Parse WordPress websites
-        $web = new Webparser();
-        $response->getBody()->write($web->find_ex($args['word']));
+        $web = new Web_example();
+        $response->getBody()->write(json_encode($web->get_sentence($args['word'])));
         return $response->withStatus(200);
     }
 }
