@@ -35,8 +35,8 @@ return [
     ],
     //Pass data for email authentication
     'mail' => [
-        'username' => 'trake1524@gmail.com',
-        'password' => 'Idinachuii'
+        'username' => 'username',
+        'password' => 'password'
     ],
     //Samples for email letters
     'mail_samples' => [
