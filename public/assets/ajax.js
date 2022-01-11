@@ -21,8 +21,13 @@ function ajax_call( method, url, callback, req_headers ) {
       });
 }
 $("#dump_books").click(function() {
-    ajax_call("POST", base_url + '/dump', function ( res ) {
+    ajax_call("POST", base_url + '/dump_lit', function ( res ) {
         console.log("Books are loaded!");
+    })
+})
+$("#dump_web").click(function() {
+    ajax_call("POST", base_url + '/dump_web', function ( res ) {
+        console.log("Web examples are loaded!");
     })
 })
 
@@ -64,22 +69,22 @@ $( "#web_search" ).click(function() {
     if( $( "#word_input" ).val().length > 0 ){
         $.get( base_url + "/web-search/" + $("#word_input").val()) 
         .done(function ( res ) {
+            console.log ('Success');
             $( "#web_search" ).html('Web');
             $( "#web_search" ).prev().prop('disabled', false);
             $( ".result_list" ).html('');
 
             let content = $.parseJSON( res );
             content.forEach(ex => {
-                if ($.isArray(ex.example) == true ) {
-                    ex.example.forEach(example => {
-                        let p_sentence = $( '<p class="web_ex_sentence">' + example + '<a href="' + ex.url + '">' + ex.url + '</a></p>');
-                        $( ".result_list" ).append( p_sentence );
+                let block = $('<div class="web example"></div>')
+                let fav = $( '<button class="add_favorite">Add to favorite</button>')
+                let p_sentence = $( '<p class="web_ex_sentence">' + ex.sentence + '</p>');
+                let a = $('<a href="' + ex.url + '">' + ex.url + '</a>');
+                block.append(p_sentence);
+                block.append(a);
+                block.append(fav);
+                $( ".result_list" ).append( block );
                     });
-                } else {
-                    let p_sentence = $( '<hr> <p class="web_ex_sentence">' + ex.example + '<a href="' + ex.url + '">' + ex.url + '</a></p>');
-                }
-            })
-            //$( ".result_list" ).html(JSON.parse(res)); 
         })
         .fail( function() {
             $( "#web_search" ).html('Web');
@@ -106,10 +111,13 @@ $( "#lit_search" ).click(function() {
             $( ".result_list" ).html('');
             let content = JSON.parse( res );
             content.forEach(ex => {
+                let block = $('<div class="lit example"></div>')
+                let fav = $( '<button class="add_favorite">Add to favorite</button>')
                 let p_sentence = $( '<p class="lit_ex_sentence">' + ex.sentence + '<q>' + ex.title + '</q></p>');
-                $( ".result_list" ).append( p_sentence );
+                block.append(p_sentence);
+                block.append(fav);
+                $( ".result_list" ).append( block );
             });
-            
         })
         .fail( function( res ) {
             //Changing button while waiting
@@ -180,5 +188,26 @@ $( document ).ready( function() {
         .fail( function() {
             console.log( 'something went wrong' );
         })
+    })
+    $( document ).on( "click", '.add_favorite', function() {
+        console.log( 'here' );
+        let sentence = $( this ).parent().children(":first").html();
+        console.log( sentence);
+        $.post( base_url + '/add_favorite', { sentence: sentence })
+        .done( function( res ) {
+            console.log(res)
+        })
+        .fail( function() {
+            console.log( 'something went wrong' );
+        })
+    })
+
+    $( document ).on("click", ".delete_favorite", function() {
+        if ( $(".delete_favorite").val().length > 0 )
+        {
+            ajax_call( "DELETE", base_url + "/delete_favorite/" + $(".delete_favorite").val(), function() {
+                window.location.reload();
+            });
+        }
     })
 })

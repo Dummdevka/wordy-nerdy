@@ -12,7 +12,7 @@ class HomeController extends Controller
         parent::__construct();
     }
 
-    public function test( Request $request, Response $response, array $args ): ResponseInterface {
+    public function show_fav( Request $request, Response $response, array $args ): ResponseInterface {
         $response->getBody()->write("Test method");
         return $response;
     }

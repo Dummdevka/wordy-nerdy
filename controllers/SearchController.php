@@ -12,7 +12,7 @@ use Slim\Psr7\Response;
 class SearchController extends Controller
 {
     public function __construct() {
-        parent::__construct('search');
+        parent::__construct();
     }
     public function get_lit( RequestInterface $request, ResponseInterface $response, $args ): ResponseInterface {
         //Check that a word had been entered

@@ -19,20 +19,20 @@ class Web_example extends Model
             //Delete all previous book quotes
             $this->truncate();
         }
-        //Upload the books
         //Get url from db
         $web = new Webparser();
         $urls = $this->db->get('urls');
         $res = [];
         foreach ($urls as $url) {
             try {
-                $category = $this->db->get('categories', 'name', ['id' => $url->category_id]);
+                //Get category
+                $category = $this->get_cat( $url->category_id );
                 $url_id = $url->id;
                 $content = $web->get_content($url->name);
                 $a = count((array)$content);
                 for ($i = 0; $i < $a; $i++) {
+                    //Creating an array for each sentence
                     $sentence = $content[$i];
-                    //debug($sentence);
                     array_push($res, compact('sentence', 'url_id'));
                 }
             } catch (Exception $e) {
@@ -45,6 +45,7 @@ class Web_example extends Model
             }
         }
         foreach( $res as $str ){
+            // Inserting the data
             $this->create( $str );
         }
         return $response->withStatus(201);
@@ -67,6 +68,7 @@ class Web_example extends Model
             }
             return $q;
     }
+    //Get category
     public function get_cat ( $id ) {
         return $this->db->get( 'categories', 'name', ['id' => $id]);
     }
