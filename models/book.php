@@ -13,22 +13,29 @@ class Book extends Model
 
     //Search sentences containing a word
     public function get_sentence( string $str ) {
-            $cond = "instr(`sentence`, '{$str}')>0;";
-            $res = $this->db->get( $this->table_name, 'sentence, title', $cond);
-            return !$res ? "Nothing could be found" : $res;
+        $cond = "sentence like '% {$str} %'";
+        $res = $this->db->get( $this->table_name, 'sentence, title', $cond);
+        return !$res ? "Nothing could be found" : $res;
     }
 
-     //Check that books are loaded into database
-     public function booksLoaded( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    //Check that books are loaded into database
+    public function booksLoaded( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         if( $this->db->table_not_empty('books')){
             //Delete all previous book quotes
             $this->truncate();
         }
         //Upload the books
         $books = new Bookparser();
-        foreach( $books->split(BASEDIR . '/contents') as $example ){
-            $this->create( $example );
+        $dir = BASEDIR . '/contents';
+
+        //Check that directory is not empty
+        if ( is_readable( $dir ) && count(scandir( $dir )) > 2) {
+            foreach( $books->split(BASEDIR . '/contents') as $example ){
+                $this->create( $example );
+            }
+            return $response->withStatus(201);
+        } else {
+            return $response->withStatus(404, 'No books could be found');
         }
-        return $response->withStatus(201);
     }
 }

@@ -6,9 +6,9 @@
         
 ?>
 <form action="signup" method="post">
-    <input type="text" name="email">
-    <input type="text" name="password">
-    <input type="text" name="username">
+    <input type="text" name="email" placeholder="Email">
+    <input type="text" name="password" placeholder="Password">
+    <input type="text" name="username" placeholder="Username">
     <input type="submit" name="submit" id="register">
 </form>
 

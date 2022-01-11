@@ -8,13 +8,17 @@
             <a href="dashboard">
                 <input type="button" id="profile_dashboard" value="My profile">
             </a>
+            <a href="favorites">
+                <input type="button" id="profile_dashboard" value="Favorites">
+            </a>
             <?php
         }
     ?>
-    <input type="button" name="<?php echo $logged ? 'logout' : 'login'; ?>" 
-    id="<?php echo $logged ? 'logout' : 'login'; ?>" 
-    value="<?php echo $logged ? 'Log out' : 'Log in'; ?>">
-    
+    <a href="<?php echo $logged ? 'logout' : 'auth'; ?>">
+        <input type="button" name="<?php echo $logged ? 'logout' : 'login'; ?>"
+        id="<?php echo $logged ? 'logout' : 'login'; ?>" 
+        value="<?php echo $logged ? 'Log out' : 'Log in'; ?>">
+    </a>
     
     <input type="text" id="word_input" placeholder="Look for...">
     <button type="button" id="lit_search" class="query_word">Literature</button>
@@ -25,4 +29,3 @@
     </div>
     <div class="result_list"></div>
 </div>
-<script src="public/assets/refresh.js"></script>

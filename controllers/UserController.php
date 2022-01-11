@@ -40,19 +40,23 @@ class UserController extends Controller
     //TODO: log in with username or email!
     public function log_in ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         if ( !empty($_POST['username'])&& !empty($_POST['password']) ){
-            if ( $res = $this->user->login() ){
+            $res = $this->user->login();
+            //debug( $res );
+            // exit();
+            if ( $res === true ){
+                //Redirect
                 return $response->withStatus(200);
             } else {
-                return $response->withStatus(404, $res );
+                return $response->withStatus(400, $res);
             }
         } else {
-            $response->getBody()->write('You cannot submit an empty form!');
-            return $response;
+            return $response->withStatus(400, 'You cannot submit an empty form!');
         }
     }
     public function log_out (RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         if ( $this->user->logout() ){
-            return $response->withStatus(200);
+            //Redirect back
+            return $response->withHeader('Location', 'search')->withStatus(200);
         } else {
             return $response->withStatus(404, 'Something went wrong');
         }

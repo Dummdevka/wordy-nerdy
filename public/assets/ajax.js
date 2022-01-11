@@ -1,54 +1,58 @@
-let headers = {
-    'Content-Type' : 'application/json',
-};
-const base_url = 'http://localhost/wordy';
-function error_mess( block, message) {
-    if (block.children(":first").hasClass( "error" )){
-        block.children(":first").html( message );
-    } else {
-    let err = $('<p class="error">'+message+'</p>');
-    block.prepend( err );
-    }
-}
-function ajax_call( method, url, callback, req_headers ) {
-    $.ajax({
-        url: url,
-        type: method,
-        success: function( res ) {
-            callback( res );
-        },
-        headers: {req_headers}
-      });
-}
+// ---------------------------------------------
+// Dump contents to the database ( admins only ) 
+// ---------------------------------------------
 $("#dump_books").click(function() {
-    ajax_call("POST", base_url + '/dump_lit', function ( res ) {
-        console.log("Books are loaded!");
+    $.get( base_url + '/dump_lit' ) 
+    .done( function() {
+        error_mess( $("#dump_lit").parent(), 'Books are loaded!', false );
     })
-})
-$("#dump_web").click(function() {
-    ajax_call("POST", base_url + '/dump_web', function ( res ) {
-        console.log("Web examples are loaded!");
+    .fail( function( data, textStatus, errorThrown ) {
+        let message = 'Internal error';
+        if ( data.status === 404 ) {
+            message = textStatus;
+        } 
+        error_mess( $("#dump_books").parent(), errorThrown );
     })
 })
 
-$( "#logout" ).click(function() {
-    ajax_call( "GET", base_url + '/logout', function ( res ) {
-        window.location.href = base_url + '/search';
+$("#dump_web").click(function() {
+    $(this).val( 'Waiting...' );
+    $.get( base_url + '/dump_web' ) 
+    .done( function() {
+        error_mess( $("#dump_web").parent(), 'Web examples are loaded!', false );
     })
-});
-$( "#login" ).click(function() {
-    window.location.href = base_url + '/auth';
-});
+    .fail( function( data, textStatus, errorThrown ) {
+        if ( data.status === 404 ) {
+            message = textStatus;
+        } 
+        error_mess( $("#dump_web").parent(), errorThrown );
+    })
+    .always( function() {
+        $("#dump_web").val('Dump web!');
+    })
+})
+
+// ---------------------------------------------
+// Registration
+// ---------------------------------------------
+//Log in
 $( "#auth_button" ).click(function() {
     let password = $( "#password" ).val();
     let username = $( "#username" ).val();
     
-    $.post( base_url + '/login', {password: password, username: username}, function( res ) {
-        console.log(res);
+    $.post( base_url + '/login',
+    {password: password, username: username})
+    .done( function( res ) {
+        //Redirect
         window.location.href = base_url + '/search';
+    })
+    .fail( function( data, textStatus, errorThrown ) {
+        console.log( errorThrown );
+        show_mess( $( ".error_message" ), errorThrown );
     })
 })
 
+//Delete user
 $( "#delete_user" ).click(function() {
     if ( $("#delete_user").val().length > 0 ) {
         ajax_call("DELETE", base_url + "/delete/" + $("#delete_user").val(), function ( res ) {
@@ -61,6 +65,11 @@ $( "#delete_user" ).click(function() {
     }
 });
 
+// ---------------------------------------------
+// Search
+// ---------------------------------------------
+
+//Web
 $( "#web_search" ).click(function() {
     //Changing button while waiting
     $(this).html('Waiting...');
@@ -75,6 +84,7 @@ $( "#web_search" ).click(function() {
             $( ".result_list" ).html('');
 
             let content = $.parseJSON( res );
+            //Listing the items
             content.forEach(ex => {
                 let block = $('<div class="web example"></div>')
                 let fav = $( '<button class="add_favorite">Add to favorite</button>')
@@ -87,9 +97,12 @@ $( "#web_search" ).click(function() {
                     });
         })
         .fail( function() {
+            error_mess( $('.result_panel'), 'Nothing could be found:(' );
+        })
+        .always( function() {
+            //Initial css
             $( "#web_search" ).html('Web');
             $( "#web_search" ).prev().prop('disabled', false);
-            error_mess( $('.result_panel'), 'Nothing could be found:(' );
         })
     } else{
         error_mess( $('.result_panel'), 'Enter a word!');
@@ -97,6 +110,7 @@ $( "#web_search" ).click(function() {
     
 });
 
+//Literature
 $( "#lit_search" ).click(function() {
     //Changing button while waiting
     $(this).html('Waiting...');
@@ -120,18 +134,24 @@ $( "#lit_search" ).click(function() {
             });
         })
         .fail( function( res ) {
-            //Changing button while waiting
+            error_mess( $('.result_panel'), 'Nothing could be found:(');
+        })
+        .always( function() {
+            //Initial css
             $( "#lit_search" ).html('Literature');
             $( "#lit_search" ).next().prop('disabled', false); 
-            error_mess( $('.result_panel'), 'Nothing could be found:(');
         })
     } else{
         error_mess( $('.result_panel'), 'Enter a word!');
     }
-    
 });
+
+// ---------------------------------------------
+// Profile dashboard
+// ---------------------------------------------
+
 $( document ).ready( function() {
-    //Change user info
+    //Username
     $( document ).on("click", "#save_username", function() {
         if( $(this).prev().val().length > 7 ){
             $.post( base_url + "/reset_username", { new_username: $(this).prev().val() })
@@ -145,8 +165,9 @@ $( document ).ready( function() {
         } else {
             error_mess( $( '.profile_username' ), 'Please come up with something a bit longer (8 characters :-))' );
         } 
-});
+    });
 
+    //Password
     $( document ).on("click", "#save_password", function() {
         if( $(this).prev().val().length > 7 ) {
             $.post( base_url + "/reset_password", { old_password: $( ".old_password").val(),
@@ -163,6 +184,7 @@ $( document ).ready( function() {
         }
     })
 
+    //Email
     $( document ).on( "click", "#save_email", function() {
         if( $(this).prev().val().length > 7 ) {
             $.post( base_url + "/reset_email", { password: $( ".password").val(),
@@ -180,28 +202,32 @@ $( document ).ready( function() {
         }
     })
 
+    //Resend letter
     $( document ).on( "click", '.resend_button', function() {
         $.get( base_url + '/resend')
         .done( function( res ) {
-            console.log(res)
+            show_mess( $( ".error_message" ), 'Confirmation letter resent!', false );
         })
-        .fail( function() {
-            console.log( 'something went wrong' );
+        .fail( function( data, statusText, errorThrown ) {
+            show_mess( $( ".error_message" ), errorThrown );
+
         })
     })
     $( document ).on( "click", '.add_favorite', function() {
-        console.log( 'here' );
         let sentence = $( this ).parent().children(":first").html();
-        console.log( sentence);
         $.post( base_url + '/add_favorite', { sentence: sentence })
         .done( function( res ) {
-            console.log(res)
+            //add 'ok'
         })
         .fail( function() {
             console.log( 'something went wrong' );
         })
     })
 
+// ---------------------------------------------
+// Favorites
+// ---------------------------------------------
+    //Delete favorite
     $( document ).on("click", ".delete_favorite", function() {
         if ( $(".delete_favorite").val().length > 0 )
         {
