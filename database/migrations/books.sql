@@ -1,4 +1,3 @@
-USE wordy;
 DROP table IF EXISTS books;
 
 CREATE TABLE IF NOT EXISTS books (

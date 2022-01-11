@@ -1,6 +1,7 @@
 <?php
 namespace controllers;
 
+use Delight\Auth\NotLoggedInException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -148,6 +149,38 @@ class UserController extends Controller
             }
         } else {
             return $response->withStatus(422, 'Some fields are empty');
+        }
+    }
+    public function add_favorite ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        //Check that user is logged in
+        if ( $_SESSION['auth_user_id'] > 0 && isset($_POST['sentence'])) {
+            if ( $this->user->addFavorite( $_SESSION['auth_user_id'], $_POST['sentence'] )) {
+                return $response->withStatus(201, 'Success');
+            } else {
+                return $response->withStatus(409, 'Error to load data');
+            }
+        } else {
+            return $response->withStatus(403, 'Not logged in!');
+        }
+    }
+    public function get_favorite ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        if ( $_SESSION['auth_user_id'] > 0 ) {
+            if ( !empty($this->user->getFavorite( $_SESSION['auth_user_id']) )) {
+                $response->getBody()->write(json_encode($this->user->getFavorite( $_SESSION['auth_user_id'])));
+                return $response->withStatus(200, 'Success');
+            } else {
+                $response->getBody()->write(json_encode("No sentences could be found. Let's explore!"));
+                return $response->withStatus(200);
+            }
+        } else {
+            return $response->withStatus(403, 'Not logged in!');
+        }
+    }
+    public function delete_favorite ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+        if ( $this->user->deleteFavorite( $args['id'] )) {
+            return $response->withStatus(200, 'Success');
+        } else {
+            return $response->withStatus(404, 'Error deleting');
         }
     }
 }

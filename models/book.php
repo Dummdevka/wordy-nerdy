@@ -9,8 +9,6 @@ class Book extends Model
 {
     public function __construct() {
         parent::__construct();
-        //Make sure that books are loaded
-        //$this->booksLoaded();
     }
 
     //Search sentences containing a word

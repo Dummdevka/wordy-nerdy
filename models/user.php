@@ -281,4 +281,20 @@ class User extends Model
             die('Too many requests');
         }
     }
+    public function addFavorite ( int $user_id, string $sentence) {
+        $vals = compact( 'user_id', 'sentence' );
+        if ( $this->db->create( 'favorites', 'user_id, sentence', $vals ) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function getFavorite ( int $user_id ) {
+        $vals = compact( 'user_id' );
+        $list = $this->db->get( 'favorites', 'id, sentence', $vals );
+        return $list;
+    }
+    public function deleteFavorite ( int $id ) {
+        return $this->db->delete( 'favorites', $id );
+    }
 }
