@@ -10,23 +10,6 @@ return [
         'user' => 'root',
         'password' => '',
     ],
-    //Wordpress src
-    'websites_url' => [
-        //Literature
-        'https://www.janefriedman.com/',
-        'http://bookriot.com/',
-        'https://therumpus.net/',
-
-        //Fashion
-        'https://thedaileigh.com/',
-        'http://thefashionguitar.com/',
-        'https://girlwithcurves.com/',
-
-        //Nature
-        'http://natureinmind.ie/',
-        'https://timswww.com.au/',
-        'https://www.explorenature.org/'
-    ],
     //Google auth data
     'google' => [
         'clientID' => '483338206732-u121esjg6sumjg4ufnr5qnk667t38843.apps.googleusercontent.com',
@@ -35,8 +18,8 @@ return [
     ],
     //Pass data for email authentication
     'mail' => [
-        'username' => 'trake1524@gmail.com',
-        'password' => 'Idinachuii'
+        'username' => 'wordy.nerdy25@gmail.com',
+        'password' => 'Trake1524'
     ],
     //Samples for email letters
     'mail_samples' => [
@@ -52,5 +35,5 @@ return [
 
 
 
-    
+
 ];
