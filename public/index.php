@@ -22,10 +22,4 @@ $config = require_once (BASEDIR . '/config.php');
 $database = new database\Database($config['database']);
 require_once BASEDIR . '/bootstrap/index.php';
 
-//Logs
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-
-$logger = new Logger('wordy');
-$logger->pushHandler(new StreamHandler(BASEDIR . '/app.log', Logger::DEBUG));
 

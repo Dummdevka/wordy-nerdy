@@ -1,0 +1,68 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    list-style: none;
+}
+body {
+    font-size: 16px;
+    font-family:Arial, Helvetica, sans-serif;
+    color: #111111;
+    display: grid;
+    grid-template-columns: 10% minmax(0, 10%) minmax(500px, 1fr) minmax(0, 10%) 10%;
+    grid-template-rows: minmax(45px, 10vh) 30px minmax(2em, 4em) 1fr;
+    row-gap: 0.8em;
+    grid-template-areas: 
+        "header header header header header"
+        ". admin . . ."
+        ". search search search ."
+        ". . result . .";
+    background-color: #BFC8AD;
+}
+button {
+    min-height: 2em;
+    min-width: 6em;
+    border-radius: 3px;
+    background-color: #718F94;
+    border: none;
+}
+button .error {
+    background-color: #e63946;
+}
+
+/* --- Search --- */
+nav {
+    grid-area: header;
+    background-color: #545775;
+    display: flex;
+}
+.nav__logo {
+    grid-column: 3/6;
+}
+.admin {
+    grid-area: admin;
+}
+.search {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 2em;
+    background-color: #90B494;
+    grid-area: search;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.result{
+    grid-area: result;
+}
+.result__div-lit,
+.result__div-web {
+    margin-bottom: 0.5em;
+    padding: 5px 5% 5px 5%;
+    border-bottom: 0.5px #718F94 solid;
+    border-radius: 1px;
+    display: flex;
+    justify-content: space-evenly;
+}
+/* --- Login --- */

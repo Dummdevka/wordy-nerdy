@@ -8,13 +8,18 @@
     $( '#ch_pass' ).click(function() {
         ch_userinfo($(this), 'password');
     });
-    function username_update(e) {
-        alert(e.prev().val());
+    function userinfo_field( field, data = '' ) {
+        $('.new_' + field).parent().html('');
+        let str = $('<p>' + field + ':' + data + '</p>');
+        let change = $('<input type="button" id="ch_' + field + '"value="Change it"></input>');
+        $('.profile_' + field ).append(str, change);
     }
+
+    //Function to convert text strings to inputs
     function ch_userinfo(e, placeholder) {
         let block = e.parent();
         
-        let new_data = $('<input type="text" name="new_'+placeholder+'" class="new_'+ placeholder+'" placeholder="New '+ placeholder+'">');
+        let new_data = $('<input type="text" name="new_' + placeholder + '" class="new_' + placeholder + '" placeholder="New ' + placeholder + '">');
         let save_data = $('<input type="button" id="save_'+ placeholder+'" value="Save">');
         
         block.html('');

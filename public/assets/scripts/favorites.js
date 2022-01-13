@@ -12,7 +12,7 @@ $( document ).ready( function() {
             $('.favorites_list').append(block);
         });
     })
-    .fail ( function( res ) {
-        console.log( $.parseJSON( res ));
+    .fail ( function( res, textStatus, errorThrown ) {
+        show_mess( $('.error_message'), errorThrown);
     })
 })

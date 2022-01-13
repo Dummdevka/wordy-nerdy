@@ -5,7 +5,7 @@ const base_url = 'http://localhost/wordy';
 //Function to display messages ( default - errors )
 function show_mess( block, message, error = true ) {
     //Rewrite existing error message
-    if (block.children(":first").hasClass( "error" )){
+    if (block.children(":first").hasClass( "error_message" )){
         block.children(":first").html( message );
     } else {
         let p = $('<p>'+message+'</p>');
