@@ -12,7 +12,7 @@ function show_mess( block, message, error = true ) {
         if ( error ) {
             p.addClass('error_message');
         } else {
-            p.addClass('any_message');
+            p.addClass('success_message');
         }
         block.prepend( p );
     }

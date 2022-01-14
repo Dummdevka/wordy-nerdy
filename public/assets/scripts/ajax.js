@@ -48,7 +48,7 @@ $( "#auth_button" ).click(function() {
     })
     .fail( function( data, textStatus, errorThrown ) {
         console.log( errorThrown );
-        show_mess( $( ".error_message" ), errorThrown );
+        show_mess( $( ".auth__span-message" ), errorThrown );
     })
 })
 
@@ -89,8 +89,8 @@ $( ".search__btn-web" ).click(function() {
             content.forEach(ex => {
                 //Example is shared class for all sentences
                 let block = $('<div class="result__div-lit"></div>')
-                let fav = $( '<button class="result__button-favorite">Add to favorite</button>')
-                let p_sentence = $( '<p class="result__p-web">' + ex.sentence + '</p>');
+                let fav = $( '<button class="result__btn-favorite">Add to favorite</button>')
+                let p_sentence = $( '<p id="example" class="result__p-web">' + ex.sentence + '</p>');
                 let a = $('<a href="' + ex.url + '">' + ex.url + '</a>');
                 //The sentence itself
                 block.append(p_sentence);
@@ -135,8 +135,8 @@ $( ".search__btn-lit" ).click(function() {
             if (content instanceof Array ) {
                 content.forEach(ex => {
                     let block = $('<div class="result__div-lit"></div>')
-                    let fav = $( '<button class="result__button-favorite">Add to favorite</button>')
-                    let p_sentence = $( '<p class="result__p-lit">' + ex.sentence + '<q>' + ex.title + '</q></p>');
+                    let fav = $( '<button class="result__btn-favorite">Add to favorite</button>')
+                    let p_sentence = $( '<p id="example" class="result__p-lit">' + ex.sentence + '<q>' + ex.title + '</q></p>');
                     block.append(p_sentence);
                     block.append(fav);
                     $( ".result" ).append( block );
@@ -174,13 +174,13 @@ $( document ).ready( function() {
                 //Construct username filed back
                 userinfo_field( 'username', username );
                 //Show success message
-                show_mess( $('.error_message'), 'Username changed!', false);
+                show_mess( $('.dashboard__span-message'), 'Username changed!', false);
             })
             .fail( function( data, textStatus, errorThrown ) {
-                show_mess( $('.error_message'), errorThrown);
+                show_mess( $('.dashboard__span-message'), errorThrown);
             })
         } else {
-            show_mess( $( '.error_message' ), 'Please come up with something a bit longer (8 characters :-))' );
+            show_mess( $( '.dashboard__span-message' ), 'Please come up with something a bit longer (8 characters :-))' );
         } 
     });
 
@@ -191,13 +191,13 @@ $( document ).ready( function() {
                  new_password: $( ".new_password" ).val()})
                 .done( function( res ) {
                     userinfo_field( 'password' );
-                    show_mess( $( '.error_message' ), 'Password changed!', false );
+                    show_mess( $( '.dashboard__span-message' ), 'Password changed!', false );
                 })
                 .fail( function( res, textStatus, errorThrown ) {
-                    show_mess( $( '.error_message' ), errorThrown );
+                    show_mess( $( '.dashboard__span-message' ), errorThrown );
                 })
         } else {
-            show_mess( $( '.error_message' ), 'Please come up with something a bit longer (8 characters :-))' );
+            show_mess( $( '.dashboard__span-message' ), 'Please come up with something a bit longer (8 characters :-))' );
         }
     })
 
@@ -209,24 +209,24 @@ $( document ).ready( function() {
                  new_email: email})
                 .done( function( res ) {
                     userinfo_field( 'email', 'Confirm');
-                    show_mess( $( '.error_message' ), 'Confirm your email!', false);
+                    show_mess( $( '.dashboard__span-message' ), 'Confirm your email!', false);
                 })
                 .fail( function( res, textStatus, errorThrown ) {
-                    show_mess( $( '.error_message' ), errorThrown );
+                    show_mess( $( '.dashboard__span-message' ), errorThrown );
                 })
         } else {
-            show_mess( $( '.error_message' ), 'An email is usually a bit longer :)' );
+            show_mess( $( '.dashboard__span-message' ), 'An email is usually a bit longer :)' );
         }
     })
 
     //Resend letter
-    $( document ).on( "click", '.resend_button', function() {
+    $( document ).on( "click", '#resend_button', function() {
         $.get( base_url + '/resend')
         .done( function( res ) {
-            show_mess( $( ".error_message" ), 'Confirmation letter resent!', false );
+            show_mess( $( ".confirm__span-message" ), 'Confirmation letter resent!', false );
         })
         .fail( function( data, statusText, errorThrown ) {
-            show_mess( $( ".error_message" ), errorThrown );
+            show_mess( $( ".confirm__span-message" ), errorThrown );
         })
     })
 
@@ -234,28 +234,30 @@ $( document ).ready( function() {
 // Favorites
 // ---------------------------------------------
 
-    $( document ).on( "click", 'result__button-favorite', function() {
-
-        let sentence = $( this ).parent().children(":first").html();
+    $( document ).on( "click", '.result__btn-favorite', function() {
+        let sentence = $( this ).parent().children(':first').html();
 
         $.post( base_url + '/add_favorite', { sentence: sentence })
         .done( function( res ) {
             show_mess( $( ".search__span-message" ), 'Sentence has been added', false );
         })
         .fail( function( data, textStatus, errorThrown ) {
-            show_mess( $( ".error_message" ), errorThrown );
+            show_mess( $( ".search__span-message" ), errorThrown );
         })
     })
 
 
     //Delete favorite
-    $( document ).on("click", ".delete_favorite", function() {
-        let block = $(this);
-        if ( $(".delete_favorite").val().length > 0 )
+    $( document ).on("click", "#delete-favorite", function() {
+        let block = $(this).parent();
+        if ( $("#delete-favorite").val().length > 0 )
         {
-            let ajax = ajax_call( "DELETE", base_url + "/delete_favorite/" + $(".delete_favorite").val());
+            let ajax = ajax_call( "DELETE", base_url + "/delete_favorite/" + $("#delete-favorite").val());
             ajax.done( function() {
-                console.log( 'done' );
+                block.html('');
+            });
+            ajax.fail( function( data, textStatus, errorThrown ) {
+                show_mess( $( ".favorites__span-message", errorThrown ));
             })
         }
     })
