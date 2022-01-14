@@ -1,7 +1,12 @@
 //This file is used to define functions used globally
 //Define base URL
 const base_url = 'http://localhost/wordy';
-
+$(window).on('load', function() {
+    //Clean search results from session storage when redirected
+    if (window.location.href != base_url + '/search' && (sessionStorage.getItem('results')) != null ) {
+        sessionStorage.removeItem('results');
+    }
+})
 //Function to display messages ( default - errors )
 function show_mess( block, message, error = true ) {
     //Rewrite existing error message

@@ -34,6 +34,9 @@ class UserController extends Controller
             return $response->withHeader( 'Location', "http://localhost/wordy/auth?status=confirm")->withStatus( 302 );
         } else {
             $res = $this->user->$method( $this->mail_func);
+            $args['page'] = 'register';
+            $args['message'] = $res;
+            $this->render( $request, $response, $args );
             return $response->withStatus(404, $res);
         }
     }
@@ -91,7 +94,7 @@ class UserController extends Controller
             if( $res = $this->user->resetUsername() === true ){
                 return $response->withStatus(200);
             } else {
-                return $response->withStatus(404, 'Some errors on the server');
+                return $response->withStatus(404, $res);
             }
         } else {
             return $response->withStatus(422, 'Some fields are empty');
