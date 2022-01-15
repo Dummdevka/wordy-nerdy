@@ -10,7 +10,7 @@ $(window).on('load', function() {
 //Function to display messages ( default - errors )
 function show_mess( block, message, error = true ) {
     //Rewrite existing error message
-    if (block.children(":first").hasClass( "error_message" )){
+    if (block.children(":first").is( '.error_message, .success_message' )){
         block.children(":first").html( message );
     } else {
         let p = $('<p>'+message+'</p>');

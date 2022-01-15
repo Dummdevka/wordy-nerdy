@@ -31,13 +31,16 @@ class MailController extends Controller {
         //Subject
         $this->mail->Subject = $subject;
         //Enable HTML
-        $this->mail->isSMTP();
+        $this->mail->isHTML(true);
         //Body
         $this->mail->Body = $body;
+        $this->mail->AltBody = $body;
+        
         $this->mail->addAddress( $to );
         //Append link if there is any
         if ( !empty($link)) {
-            $this->mail->Body .= '<a href="'.$link.'">'.$link.'</a>';
+            $this->mail->Body .= '<br>';
+            $this->mail->Body .= '<a href="'.$link.'"><button type="button" style="height:30px;width:70px;background-color:#60d394;border:none;border-radius:3px;">Confirm!</button></a>';
         }
         //Send the letter
         if ( $this->mail->Send() ) {
