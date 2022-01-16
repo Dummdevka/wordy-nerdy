@@ -223,10 +223,17 @@ $( document ).ready( function() {
     })
 
     //Resend letter
-    $( document ).on( "click", '#resend_button', function() {
+    $( document ).on( "click", '.button-resend', function() {
         $.get( base_url + '/resend')
         .done( function( res ) {
-            show_mess( $( ".confirm__span-message" ), 'Confirmation letter resent!', false );
+            // //Append icon
+            // let i = $('<i class="far fa-thumbs-up"></i>');
+            // //Hide in 4 seconds
+            // setTimeout(function() {
+            //     $('.fa-thumbs-up').fadeOut('fast');
+            // }, 4000);
+            // $('.button-resend').append(i);
+            thumb_up( $('.button-resend') );
         })
         .fail( function( data, statusText, errorThrown ) {
             show_mess( $( ".confirm__span-message" ), errorThrown );
@@ -239,10 +246,11 @@ $( document ).ready( function() {
 
     $( document ).on( "click", '.result__btn-favorite', function() {
         let sentence = $( this ).parent().children(':first').html();
-
+        let button = $( this );
         $.post( base_url + '/add_favorite', { sentence: sentence })
         .done( function( res ) {
-            show_mess( $( ".search__span-message" ), 'Sentence has been added', false );
+            thumb_up( button, 2000 );
+            // show_mess( $( ".search__span-message" ), 'Sentence has been added', false );
         })
         .fail( function( data, textStatus, errorThrown ) {
             show_mess( $( ".search__span-message" ), errorThrown );

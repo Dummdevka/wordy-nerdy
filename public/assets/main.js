@@ -30,3 +30,12 @@ function ajax_call( method, url, data = '' ) {
     });
     return ajax;
 }
+//Function to show thumb up :)
+function thumb_up( block, time = 4000 ) {
+    let i = $('<i class="far fa-thumbs-up"></i>');
+    //Hide in 4 seconds
+    setTimeout(function() {
+        $('.fa-thumbs-up').fadeOut('fast');
+    }, time);
+    block.append(i);
+}
