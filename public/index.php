@@ -13,6 +13,7 @@ function debug( $str ) {
 
 //Constants
 define('BASEDIR', dirname(__DIR__,1));
+define('BASEURL', 'http://localhost/wordy/');
 define('DS', DIRECTORY_SEPARATOR);
 define('CLASS_DIR', BASEDIR . '/classes/');
 define('VIEWS_DIR', BASEDIR . '/views/');

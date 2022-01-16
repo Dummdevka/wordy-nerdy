@@ -60,9 +60,7 @@ class User extends Model
                         $_POST['email'],
                         'Registration on Wordy',
                         $this->config['mail_samples']['register'],
-                        'http:\\localhost\wordy\email_confirm?&redirect=auth&selector='
-                            . \urlencode($selector)
-                            . '&token=' . \urlencode($token)
+                        'http://localhost/wordy/email_confirm?&redirect=guest/auth&selector=' . \urlencode($selector). '&token=' . \urlencode($token)
                     );
                 }
             );
@@ -179,11 +177,9 @@ class User extends Model
                         $_POST['new_email'],
                         'Wordy Email Reset',
                         $this->config['mail_samples']['new_email'],
-                        'http:\\localhost\wordy\email_confirm?selector='
-                        . \urlencode($selector)
-                            . '&token=' . \urlencode($token)
-                    ) . '&redirect=dashboard';
-                });
+                        'http://localhost/wordy/email_confirm?selector=' . \urlencode($selector) . '&token=' . \urlencode($token) . '&redirect=auth/dashboard');
+                    }
+                );
                 return true;
             } else {
                 return false;
@@ -198,9 +194,7 @@ class User extends Model
                     $email,
                     'Registration on Wordy',
                     $this->config['mail_samples']['register'],
-                    'http:\\localhost\wordy\email_confirm?redirect=auth&selector='
-                        . \urlencode($selector)
-                        . '&token=' . \urlencode($token)
+                    'http://localhost/wordy/email_confirm?redirect=/wordy/guest/auth&selector=' . \urlencode($selector) . '&token=' . \urlencode($token)
                 );
             });
             return true;
@@ -216,9 +210,7 @@ class User extends Model
                     $_POST['email'],
                     'Forgot password on Wordy',
                     $this->config['mail_samples']['forgot_password'],
-                    'http:\\localhost\wordy\email_confirm?redirect=new_pass&selector='
-                        . \urlencode($selector)
-                        . '&token=' . \urlencode($token)
+                    'http://localhost/wordyemail_confirm?redirect=guest/new_pass&selector=' . \urlencode($selector) . '&token=' . \urlencode($token)
                 );
             });
             return true;

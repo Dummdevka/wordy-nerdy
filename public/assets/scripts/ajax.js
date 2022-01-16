@@ -44,7 +44,7 @@ $( "#auth_button" ).click(function() {
     {password: password, username: username})
     .done( function( res ) {
         //Redirect
-        window.location.href = base_url + '/search';
+        window.location.href = base_url;
     })
     .fail( function( data, textStatus, errorThrown ) {
         console.log( errorThrown );
@@ -57,7 +57,7 @@ $( "#delete_user" ).click(function() {
     if ( $("#delete_user").val().length > 0 ) {
         ajax_call("DELETE", base_url + "/delete/" + $("#delete_user").val(), function ( res ) {
             console.log( res );
-            window.location.href = base_url + '/search';
+            window.location.href = base_url;
         })
     } else {
         //Check that anything left after the user is cleaned
@@ -165,7 +165,7 @@ $( ".search__btn-lit" ).click(function() {
 
 $( document ).ready( function() {
     //Username
-    $( document ).on("click", "#save_username", function() {
+    $( document ).on("click", "#save-username", function() {
         if( $(this).prev().val().length > 7 ){
             let username = $(this).prev().val();
             $.post( base_url + "/reset_username", { new_username:  username})
@@ -185,10 +185,12 @@ $( document ).ready( function() {
     });
 
     //Password
-    $( document ).on("click", "#save_password", function() {
-        if( $(this).prev().val().length > 7 ) {
-            $.post( base_url + "/reset_password", { old_password: $( ".old_password").val(),
-                 new_password: $( ".new_password" ).val()})
+    $( document ).on("click", "#save-password", function() {
+        let old_pass = $('#new-password').val();
+        let new_pass = $('#new-password').val();
+        if( old_pass.length > 7 ) {
+            $.post( base_url + "/reset_password", { old_password: old_pass,
+                 new_password: new_pass})
                 .done( function( res ) {
                     userinfo_field( 'password' );
                     show_mess( $( '.dashboard__span-message' ), 'Password changed!', false );
@@ -202,11 +204,12 @@ $( document ).ready( function() {
     })
 
     //Email
-    $( document ).on( "click", "#save_email", function() {
-        if( $(this).prev().val().length > 7 ) {
-            let email = $( ".new_email" ).val();
-            $.post( base_url + "/reset_email", { password: $( ".password").val(),
-                 new_email: email})
+    $( document ).on( "click", "#save-email", function() {
+        let password = $('#email-password').val();
+        let new_email = $('#new-email').val();
+        if( new_email.length > 7 || password.length > 1) {
+            $.post( base_url + "/reset_email", { password: password,
+                 new_email: new_email})
                 .done( function( res ) {
                     userinfo_field( 'email', 'Confirm');
                     show_mess( $( '.dashboard__span-message' ), 'Confirm your email!', false);

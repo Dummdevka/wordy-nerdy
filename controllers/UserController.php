@@ -31,7 +31,7 @@ class UserController extends Controller
         $method = end($method);
         if ( $res = $this->user->$method( $this->mail_func ) === true ) {
             $response->getBody()->write( 'Confirm your email!' );
-            return $response->withHeader( 'Location', "http://localhost/wordy/auth?status=confirm")->withStatus( 302 );
+            return $response->withHeader( 'Location', BASEURL . "auth?status=confirm")->withStatus( 302 );
         } else {
             $res = $this->user->$method( $this->mail_func);
             $args['page'] = 'register';
@@ -44,11 +44,9 @@ class UserController extends Controller
     public function log_in ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         if ( !empty($_POST['username'])&& !empty($_POST['password']) ){
             $res = $this->user->login();
-            //debug( $res );
-            // exit();
             if ( $res === true ){
                 //Redirect
-                return $response->withStatus(200);
+                return $response->withHeader('Location', BASEURL)->withStatus(200);
             } else {
                 return $response->withStatus(400, $res);
             }
@@ -56,10 +54,10 @@ class UserController extends Controller
             return $response->withStatus(400, 'You cannot submit an empty form!');
         }
     }
-    public function log_out (RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function log_out (RequestInterface $request, ResponseInterface $response, array $args ) : ResponseInterface {
         if ( $this->user->logout() ){
             //Redirect back
-            return $response->withHeader('Location', 'search')->withStatus(200);
+            return $response->withHeader('Location', BASEURL)->withStatus(200);
         } else {
             return $response->withStatus(404, 'Something went wrong');
         }
@@ -79,7 +77,7 @@ class UserController extends Controller
             if ( isset( $_GET['redirect']) ) {
                 setcookie('selector', $_GET['selector'], time()+1800);
                 setcookie('token', $_GET['token'], time()+1800);
-                return $response->withHeader('Location', $_GET['redirect'])->withStatus(302);
+                return $response->withHeader('Location', self::get_url($_GET['redirect']))->withStatus(302);
             } else {
                 return $response->withStatus(200);
             }
@@ -101,7 +99,9 @@ class UserController extends Controller
         }
     }
     public function reset_email ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
-        if ( !empty($_POST['new_email'])&&!empty($_POST['password'])){
+        if ( !empty($_POST['new_email'])
+             &&!empty($_POST['password'])
+             &&filter_var( $_POST['new_email'], FILTER_VALIDATE_EMAIL)){
             if( $res = $this->user->resetEmail( $this->mail_func ) ){
                 return $response->withStatus(200);
             } else {
@@ -130,7 +130,7 @@ class UserController extends Controller
                 return $response->withStatus( 500, $res );
             }
         } else {
-            return $response->withHeader('Location', 'search')->withStatus( 403, 'No email supplied' );
+            return $response->withHeader('Location', BASEURL)->withStatus( 403, 'No email supplied' );
         }
     }
     public function forgot_password ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
@@ -139,7 +139,7 @@ class UserController extends Controller
                 $_SESSION['temp_email'] = $_POST['email'];
                 $args['token'] = $_GET['token'];
                 $args['selector'] = $_GET['selector'];
-                return $response->withHeader('Location', 'confirm')->withStatus(302);
+                return $response->withHeader('Location', self::get_url('auth/confirm'))->withStatus(302);
             } else {
                 return $response->withStatus(404, $res);
             }
@@ -150,7 +150,7 @@ class UserController extends Controller
     public function set_new_password ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         if ( isset($_POST['new_password'])&& isset($_COOKIE['selector']) && isset($_COOKIE['token']) ){
             if ( $res = $this->user->setNewPassword() ){
-                return $response->withHeader('Location', 'auth')->withStatus(302);
+                return $response->withHeader('Location', self::get_url('guest/auth'))->withStatus(302);
             } else {
                 return $response->withStatus(404, $res);
             }

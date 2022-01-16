@@ -13,7 +13,7 @@ function show_mess( block, message, error = true ) {
     if (block.children(":first").is( '.error_message, .success_message' )){
         block.children(":first").html( message );
     } else {
-        let p = $('<p>'+message+'</p>');
+        let p = $('<p>' + message + '</p>');
         if ( error ) {
             p.addClass('error_message');
         } else {

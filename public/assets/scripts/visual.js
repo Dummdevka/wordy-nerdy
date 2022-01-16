@@ -22,19 +22,19 @@
         let new_data = $('<input type="text" name="new_' + placeholder + '" class="dashboard__input-' + placeholder
             + '"id="new-' + placeholder 
             + '"placeholder="New ' + placeholder + '">');
-        let save_data = $('<button type="button" id="save_' + placeholder 
+        let save_data = $('<button type="button" id="save-' + placeholder 
             + '"class="dashboard__btn-save">Save</button>');
         
         block.html('');
         if( placeholder == 'password'){
             let old_data = $('<input type="text" name="old_'+ placeholder 
             + '"class="dashboard__input input-' + placeholder
-            + '" id="old_'+ placeholder 
+            + '" id="old-'+ placeholder 
             + '" placeholder="Old '+ placeholder+'">');
             block.append(old_data);
         }
         if( placeholder == 'email'){
-            let old_data = $('<input type="text" name="password" class="dashboard__input-password" id="email_password" placeholder="Password">');
+            let old_data = $('<input type="text" name="password" class="dashboard__input-password" id="email-password" placeholder="Password">');
             block.append(old_data);
         }
         block.append(new_data);

@@ -37,9 +37,13 @@ input {
 a {
     color: inherit;
 }
+i {
+    margin: 0 5px 0 5px;
+}
 .error_message,
 .success_message {
     background-color: #60d394;
+    padding: 5px;
     text-align: center;
     margin: 5px 0 5px 0;
     min-height: 2em;
@@ -50,6 +54,7 @@ a {
 .error_message {
     background-color: #c75146;
 }
+
 .form {
     display: flex;
     align-items: center;
@@ -98,9 +103,15 @@ nav {
     max-width: 70%;
     justify-self: center;
 }
-
 .auth input {
     margin-bottom: 5px;
+}
+.auth__span-message {
+    margin-bottom: 1em;
+}
+.auth__span-message button {
+    background-color: #90B494;
+    width: 50%;
 }
 /* --- Dashboard --- */
 
