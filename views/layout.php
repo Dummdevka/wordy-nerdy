@@ -1,34 +1,100 @@
+<?php
+    $logged = false;
+    $temp_email = false;
+    $admin = false;
+    if( isset($_SESSION['auth_logged_in']) ){
+        $logged = $_SESSION['auth_logged_in'];
+    } 
+    if( isset( $_SESSION['temp_email']) ){
+        $temp_email = $_SESSION['temp_email'];
+    }
+    if (isset($_SESSION['auth_roles']) && $_SESSION['auth_roles'] === 1) {
+        $admin = true;
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/wordy/public/assets/css/main.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script src="public/assets/main.js"></script>
+    <script src="/wordy/public/assets/main.js"></script>
+    <script src="https://kit.fontawesome.com/9ac41c9e98.js" crossorigin="anonymous"></script>
     <title>Wordy</title>
 </head>
 <body>
-    <a href="search"><h1>Hurray Wordy!</h1></a>
-    <div class="container">
-        <input type="button" value="Dump books!" id="dump_books">
-        <input type="button" value="Dump web!" id="dump_web">
+    <nav>
+    <div class="nav__logo">
+            <a href="/wordy/public/search" class="nav__logo-link"><h1>Hurray Wordy!</h1></a>
+        </div>
+        <!-- For small screens -->
+        <div class="nav__user-small">
+        <?php if( $logged) { ?>
+            <span class="nav__user-small_arrow" id="small-menu-arrow"></span>
+            <div class="nav__user-small_menu" id="small-menu">
+                
+                <ul>
+                    <li><a href="/wordy/logout" class="nav__user-small_link">Logout</a></li>
+                    <li><a href="/wordy/auth/dashboard" class="nav__user-small_link">Dashboard</a></li>
+                    <li><a href="/wordy/auth/favorites" class="nav__user-small_link">Favorites</a></li>
+                </ul>
+                <?php } else { ?>
+                    <a href="/wordy/guest/auth">
+                        <button type="button" name="login"
+                        id="login-btn" class="btn-link">
+                            Login
+                        </button>
+                    </a>
+                <?php } ?>
+            </div>
+        </div>
+        
+        <!-- For authorized users -->
+        <div class="nav__user-normal">
+            <?php
+                if( $logged ){
+                    $username = $_SESSION['auth_username'];
+                    ?>
+                    <p class="nav__greeting"> Hi, <?php echo $username ?> ! Ready to explore the world of words? Jump in!</p>
+                    <div class="nav__btns">
+                        <a class="nav__link-dashboard" href="/wordy/auth/dashboard">
+                            <button type="button" class="nav__btn btn-link">                 
+                                <i class="fas fa-address-card"></i> My profile 
+                            </button>
+                        </a>
+                        <a class="nav__link" href="/wordy/auth/favorites">
+                            <button type="button" class="nav__btn btn-link">Favorites</button>
+                        </a>
+                        <?php
+                        if( $admin ) { ?>
+                                <a href="/wordy/admin/dashboard">
+                                 <button type="button" class="nav__btn btn-link">Admin dashboard</button>
+                                </a>
+                            <?php }
+                        } ?>
+                <a href="<?php echo $logged ? '/wordy/logout' : '/wordy/guest/auth'; ?>">
+                    <button type="button" name="<?php echo $logged ? 'logout' : 'login'; ?>"
+                    id="<?php echo $logged ? 'logout-btn' : 'login-btn'; ?>" class="btn-link" >
+                        <?php echo $logged ? 'Log out' : 'Log in'; ?>
+                    </button>
+                </a>
+            </div>
+        </div>
+    </nav>
+        <!-- Include the page -->
         <?php
-            if( !empty($_SESSION['auth_logged_in']) ){
-                $logged = $_SESSION['auth_logged_in'];
-            } else {
-                $logged = false;
-            }
-            if(!empty($args['page'])){
-                require_once 'pages/' . $args['page'] . '.php';
+            if(!empty($args['page']) && !empty($args['path'])){
+                require_once 'pages/' . $args['path'] . DS . $args['page'] . '.php';
             } else {
                 echo 'No page';
             }
         ?>
-    </div>
-<script src="public/assets/visual.js"></script>
-<script src="public/assets/ajax.js"></script>
-<script src="public/assets/refresh.js"></script>
+        
+<script src="/wordy/public/assets/scripts/visual.js"></script>
+<script src="/wordy/public/assets/scripts/ajax.js"></script>
 
 </body>
 </html>

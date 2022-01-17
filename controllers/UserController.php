@@ -1,7 +1,6 @@
 <?php
 namespace controllers;
 
-use Delight\Auth\NotLoggedInException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -31,7 +30,7 @@ class UserController extends Controller
         $method = end($method);
         if ( $res = $this->user->$method( $this->mail_func ) === true ) {
             $response->getBody()->write( 'Confirm your email!' );
-            return $response->withHeader( 'Location', BASEURL . "auth?status=confirm")->withStatus( 302 );
+            return $response->withHeader( 'Location', self::get_url('guest/auth?status=confirm'))->withStatus( 302 );
         } else {
             $res = $this->user->$method( $this->mail_func);
             $args['page'] = 'register';

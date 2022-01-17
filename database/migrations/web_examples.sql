@@ -8,4 +8,5 @@ CREATE TABLE IF NOT EXISTS web_examples (
     PRIMARY KEY (`id`),
     CONSTRAINT fk_url_id FOREIGN KEY (url_id) 
     REFERENCES urls(id)
+    ON DELETE CASCADE ON UPDATE NO ACTION
 )

@@ -4,7 +4,7 @@
         exit();
     } else {
 ?>
-<form action="forgot_password" method="post">
+<form action="/wordy/forgot_password" method="post">
     <input type="text" placeholder="Enter your email" id="new_pass" name="email">
     <button type="submit">Reset password</button>
 </form>
