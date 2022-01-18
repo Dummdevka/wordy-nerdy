@@ -20,6 +20,7 @@ return [
     'mail' => [
         'username' => 'wordy.nerdy25@gmail.com',
         'password' => 'Trake1524'
+
     ],
     //Samples for email letters
     'mail_samples' => [
@@ -32,8 +33,4 @@ return [
         'new_email' => "Hi there! <br> You have recently <b>changed</b> your email on Wordy.
                         Please confirm it by clicking the link down below: ",
     ]
-
-
-
-
 ];
