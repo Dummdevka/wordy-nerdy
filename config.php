@@ -10,23 +10,6 @@ return [
         'user' => 'root',
         'password' => '',
     ],
-    //Wordpress src
-    'websites_url' => [
-        //Literature
-        'https://www.janefriedman.com/',
-        'http://bookriot.com/',
-        'https://therumpus.net/',
-
-        //Fashion
-        'https://thedaileigh.com/',
-        'http://thefashionguitar.com/',
-        'https://girlwithcurves.com/',
-
-        //Nature
-        'http://natureinmind.ie/',
-        'https://timswww.com.au/',
-        'https://www.explorenature.org/'
-    ],
     //Google auth data
     'google' => [
         'clientID' => '483338206732-u121esjg6sumjg4ufnr5qnk667t38843.apps.googleusercontent.com',
@@ -35,22 +18,19 @@ return [
     ],
     //Pass data for email authentication
     'mail' => [
-        'username' => 'username',
-        'password' => 'password'
+        'username' => 'wordy.nerdy25@gmail.com',
+        'password' => 'Trake1524'
+
     ],
     //Samples for email letters
     'mail_samples' => [
-        'register' => 'Hi there! You have recently created an account on Wordy.
-                        Please note that your password is the same as your e-mail account.
+        'register' => "Hi there! <br> You have recently created an account on Wordy.
+                        Please note that your <b>password</b> is the same as your e-mail address.
                         You can change it anytime!
-                        Please confirm it by clicking the link down below: ',
-        'forgot_password' => 'Hi there! You have recently changed your password on Wordy.
-                        Please confirm it by clicking the link down below: ',
-        'new_email' => 'Hi there! You have recently changed your email on Wordy.
-                        Please confirm it by clicking the link down below: ',
+                        Please confirm it by clicking the link down below: ",
+        'forgot_password' => "Hi there! <br> You have recently <b>changed</b> your password on Wordy.
+                        Please confirm it by clicking the link down below: ",
+        'new_email' => "Hi there! <br> You have recently <b>changed</b> your email on Wordy.
+                        Please confirm it by clicking the link down below: ",
     ]
-
-
-
-    
 ];

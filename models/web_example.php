@@ -14,7 +14,7 @@ class Web_example extends Model
         parent::__construct();
     }
     //Check that books are loaded into database
-    public function webLoaded(RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
+    public function webLoaded() {
         if ($this->db->table_not_empty($this->table_name)) {
             //Delete all previous book quotes
             $this->truncate();
@@ -23,11 +23,13 @@ class Web_example extends Model
         $web = new Webparser();
         $urls = $this->db->get('urls');
         $res = [];
+
         foreach ($urls as $url) {
             try {
                 //Get category
                 $category = $this->get_cat( $url->category_id );
                 $url_id = $url->id;
+                //Getting content from all the websites
                 $content = $web->get_content($url->name);
                 $a = count((array)$content);
                 for ($i = 0; $i < $a; $i++) {
@@ -38,9 +40,9 @@ class Web_example extends Model
             } catch (Exception $e) {
                 //If a url doesnt work then return what could be extracted
                 if (!empty($res)) {
-                    return json_encode($res);
+                    return 'Url has been added, but perhaps it doesnt work';
                 } else {
-                    return false;
+                    return 'Check your first url';
                 }
             }
         }
@@ -48,7 +50,7 @@ class Web_example extends Model
             // Inserting the data
             $this->create( $str );
         }
-        return $response->withStatus(201);
+        return true;
     }
     public function get_sentence ( $str ) {
         $cond = "instr(`sentence`, '{$str}')>0;";
