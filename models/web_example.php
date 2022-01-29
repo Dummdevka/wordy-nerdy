@@ -17,8 +17,15 @@ class Web_example extends Model
     public function webLoaded() {
         if ($this->db->table_not_empty($this->table_name)) {
             //Delete all previous book quotes
-            $this->truncate();
+            $this->truncate(); // WHOA WHOA WHOA!!! What's going on here?
+            /*
+                I'm guessing you're truncating the DB because you're not sure how to not create duplicate
+                sentences in the db, right? Let's talk about this... You shouldn't have to scrap all of your
+                previous work, just because you *might* have duplicates. There are ways to solve this problem =]
+                Let's put our heads together and figure out a solution here!
+            */
         }
+
         //Get url from db
         $web = new Webparser();
         $urls = $this->db->get('urls');
