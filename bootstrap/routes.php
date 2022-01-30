@@ -1,4 +1,5 @@
 <?php
+
 // Server requests
 $app->get('/logout', controllers\UserController::class . ':log_out');
 $app->delete('/delete/{id}', controllers\UserController::class . ':delete_user');
@@ -18,5 +19,3 @@ $app->get('/{page}', controllers\HomeController::class . ':render');
 $app->post('/dump', models\Book::class . ':booksLoaded'); 
 $app->get('/lit-search/{word}', controllers\SearchController::class . ':get_lit');
 $app->get('/web-search/{word}', controllers\SearchController::class . ':get_web');
-
-

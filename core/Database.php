@@ -53,43 +53,43 @@ class Database
     public function condition($cond, $join) {
         $where_str = ''; //String for additional sql
 
-            foreach($cond as $col=>$val){
-                $where_str .= empty($where_str) ? ' ' : $join; //Connecting conditions
+        foreach($cond as $col=>$val){
+            $where_str .= empty($where_str) ? ' ' : $join; //Connecting conditions
 
-                $where_str .= $col . "=:" . $col; //Forming prepared statement
-                
-                $cond[':' . $col] = $cond[$col]; //Reseting keys
-                unset($cond[$col]);
-            }
-            return $where_str;
+            $where_str .= $col . "=:" . $col; //Forming prepared statement
+
+            $cond[':' . $col] = $cond[$col]; //Reseting keys
+            unset($cond[$col]); // this isn't needed...
+        }
+        return $where_str;
     }
     
     //Read
     public function get($table, $params = '*', $cond = '') {
-            $sql = 'select ' . $params. ' from ' . $table;
+        $sql = 'select ' . $params. ' from ' . $table;
 
-            //Additional conditions
-            if(!empty($cond)) {
-                if( is_array($cond)){
+        //Additional conditions
+        if(!empty($cond)) {
+            if( is_array($cond)){
 
-                    $where_str = $this->condition($cond, ' and ');
-                } elseif( is_string($cond) ) {
-                
-                    //Custom condition
-                    $where_str = $cond;
+                $where_str = $this->condition($cond, ' and ');
+            } elseif( is_string($cond) ) {
 
-                }
+                //Custom condition
+                $where_str = $cond;
 
-                $sql .= ' where ' .$where_str; //Add condition
-                if(is_array($cond)){
-                    $stmt = $this->connect()->prepare($sql);
-                    $stmt->execute($cond); //Execute prepared statement
-                    $res = $stmt->fetchAll(); //Fetch results
-                    return $res;
-                }
             }
-            $res = $this->connect()->query($sql)->fetchAll(); //Get all ids
-            return $res;
+
+            $sql .= ' where ' .$where_str; //Add condition
+            if(is_array($cond)){
+                $stmt = $this->connect()->prepare($sql);
+                $stmt->execute($cond); //Execute prepared statement
+                $res = $stmt->fetchAll(); //Fetch results
+                return $res;
+            }
+        }
+        $res = $this->connect()->query($sql)->fetchAll(); //Get all ids
+        return $res;
     }
 
     public function create($table, $fields, $values) {    
