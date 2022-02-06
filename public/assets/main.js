@@ -39,3 +39,14 @@ function thumb_up( block, time = 4000 ) {
     }, time);
     block.append(i);
 }
+//Funtion to handle server requests errors
+function handle_server_errors( data, textStatus, errorThrown ) {
+    //Server errors
+    if ( data.status >= 500 ) {
+        message = 'Something wrong on the server side';
+    //User side errors
+    } else {
+        message = errorThrown ?? 'Try again later';
+    }
+    error_mess( $("#dump_web").parent(), errorThrown );
+}

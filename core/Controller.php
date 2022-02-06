@@ -21,22 +21,32 @@ abstract class Controller
         $this->model = "models\\$model_class";
     }
      public function render ( Request $request, Response $response, $args ) : ResponseInterface {
-         switch( $args['path']) {
-            case 'auth':
-                if( !$this->isLogged() ) {
-                    //Redirect
-                    return $response->withHeader('Location', self::get_url('public/search'));
-                }
-                break;
-            case 'guest':
-                if( $this->isLogged() ) {
-                    //Redirect
-                    return $response->withHeader('Location', self::get_url('public/search'));
-                }
-                break;
-         }
-        require_once VIEWSDIR  . $this->layout . '.php';
-        return $response;
+        /**
+         * $args['path'] => admin/guest/admin
+         * $args['page']
+         * $args['message'] 
+         */
+
+        if( isset( $args['path'] )) {
+            switch( $args['path']) {
+               case 'auth':
+                   if( !$this->isLogged() ) {
+                       //Redirect
+                       return $response->withHeader('Location', self::get_url('public/search'));
+                   }
+                   break;
+               case 'guest':
+                   if( $this->isLogged() ) {
+                       //Redirect
+                       return $response->withHeader('Location', self::get_url('public/search'));
+                   }
+                   break;
+            }
+            require_once VIEWSDIR  . $this->layout . '.php';
+            return $response;
+        } else {
+            return $response->withHeader( 'Location', BASEURL );
+        }
     }
     public function isLogged () {
         if( isset($_SESSION['auth_user_id'])) {

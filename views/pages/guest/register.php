@@ -1,16 +1,7 @@
 <div class="auth form">
+<?php require_once 'error_message.php'; ?>
 <form action="/wordy/signup" method="post" class="auth__form form">
-    <span class="auth__span-message">
-        <?php
-            if( isset($args['message'])){
-                ?>
-                <p class="error_message">
-                    <?php echo $args['message'];?>
-                </p>
-                <?php
-            }
-        ?>
-    </span>
+    <?php require_once 'error_message.php'; ?>
     <input type="text" name="email" placeholder="Email" class="auth__input input-email">
     <input type="text" name="password" placeholder="Password" class="auth__input input-password">
     <input type="text" name="username" placeholder="Username" class="auth__input input-username">

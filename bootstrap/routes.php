@@ -40,7 +40,7 @@ $app->get('/dump_web', models\Web_example::class . ':webLoaded');
 
 //Search
 $app->get('/lit-search/{word}', controllers\SearchController::class . ':get_lit');
-$app->get('/web-search/{word}', controllers\SearchController::class . ':get_web');
+$app->get('/wb-search/{word}', controllers\SearchController::class . ':get_web');
 
 //Pages rendering
 $app->get('/{path}/{page}', controllers\SearchController::class . ':render');

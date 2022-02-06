@@ -1,18 +1,9 @@
 <?php
-    $logged = false;
-    $temp_email = false;
-    $admin = false;
-    if( isset($_SESSION['auth_logged_in']) ){
-        $logged = $_SESSION['auth_logged_in'];
-    } 
-    if( isset( $_SESSION['temp_email']) ){
-        $temp_email = $_SESSION['temp_email'];
-    }
-    if (isset($_SESSION['auth_roles']) && $_SESSION['auth_roles'] === 1) {
-        $admin = true;
-    }
+    $logged = $_SESSION['auth_logged_in'] ?? false;
+    $temp_email = $_SESSION['auth_temp_email'] ?? false;
+    $admin = isset($_SESSION['auth_roles']) && $_SESSION['auth_roles'] === 1;
+    $username = $_SESSION['auth_username'] ?? 'Wonderful Person';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,10 +23,9 @@
         </div>
         <!-- For small screens -->
         <div class="nav__user-small">
-        <?php if( $logged) { ?>
+        <?php if( $logged ) { ?>
             <span class="nav__user-small_arrow" id="small-menu-arrow"></span>
             <div class="nav__user-small_menu" id="small-menu">
-                
                 <ul>
                     <li><a href="/wordy/logout" class="nav__user-small_link">Logout</a></li>
                     <li><a href="/wordy/auth/dashboard" class="nav__user-small_link">Dashboard</a></li>
@@ -56,10 +46,11 @@
         <div class="nav__user-normal">
             <?php
                 if( $logged ){
-                    $username = $_SESSION['auth_username'];
                     ?>
                     <p class="nav__greeting"> Hi, <?php echo $username ?> ! Ready to explore the world of words? Jump in!</p>
+                    <?php } ?>
                     <div class="nav__btns">
+                        <?php if( $logged ){ ?>
                         <a class="nav__link-dashboard" href="/wordy/auth/dashboard">
                             <button type="button" class="nav__btn btn-link">                 
                                 <i class="fas fa-address-card"></i> My profile 
@@ -73,15 +64,16 @@
                                 <a href="/wordy/admin/dashboard">
                                  <button type="button" class="nav__btn btn-link">Admin dashboard</button>
                                 </a>
-                            <?php }
-                        } ?>
-                <a href="<?php echo $logged ? '/wordy/logout' : '/wordy/guest/auth'; ?>">
-                    <button type="button" name="<?php echo $logged ? 'logout' : 'login'; ?>"
-                    id="<?php echo $logged ? 'logout-btn' : 'login-btn'; ?>" class="btn-link" >
-                        <?php echo $logged ? 'Log out' : 'Log in'; ?>
-                    </button>
-                </a>
-            </div>
+                            <?php }?>
+                            <a href="/wordy/guest/logout">
+                                <button type="button" name="logout" id="logout-btn" class="btn-link">Log out</button>
+                            </a>
+                        <?php } else {?>
+                    <a href="/wordy/guest/auth">
+                        <button type="button" name="login" id="login-btn" class="btn-link">Log in</button>
+                    </a>
+                    <?php } ?>
+                    </div>
         </div>
     </nav>
         <!-- Include the page -->
