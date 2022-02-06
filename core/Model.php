@@ -35,29 +35,40 @@ abstract class Model
          return $ids;
      }
  
-     public function create ( Array $vals){
+     public function create ( Array $vals ){
          
          $fields = '';
-         foreach($vals as $field=>$val){
-             $fields .= empty($fields) ? '':', ';
+         foreach($vals as $field => $val){
+             $fields .= empty( $fields ) ? '':', ';
              $fields .= $field;
              $vals[':' . $field] = $vals[$field];
-             unset($vals[$field]);
+             unset( $vals[$field] );
          }
          return $this->db->create($this->table_name, $fields, $vals);
      }
      
      //Update row (by id)
-     public function update($id, Array $upload_data){
+     public function update ( $id, Array $upload_data ){
          var_dump(
              $this->db->update(
                  $this->table_name, $id,$upload_data));
      }
  
      //Delete row (by id)
-     public function delete($id)
+     public function delete ( $id )
      {
-         $this->db->delete($this->table, $id);
+         $this->db->delete( $this->table, $id );
+     }
+     public function has (Array $vals ) {
+        $key = array_key_first( $vals );
+        $res = $this->db->get( $this->table_name, $key, $vals );
+        
+        foreach ($res as $line){
+            if ( strcmp( $vals[$key], $line->$key) === 0 ) {
+                return true;
+            } 
+        }
+        return false;
      }
     
 }

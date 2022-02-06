@@ -18,10 +18,10 @@ class UserController extends Controller
         //Mail (provisional solution)
         $this->mail_func = function ( $to, $subject, $body, $link = '' ) {
             $phpmailer = new MailController();
-            if ( $phpmailer->send( $to, $subject, $body, $link) ) {
+            if ( $res = $phpmailer->send( $to, $subject, $body, $link) ) {
                 return true;
             } else {
-                return false;
+                throw new EmailNotSentException('Email not sent');
             }
         };
     }
@@ -98,9 +98,7 @@ class UserController extends Controller
         }
     }
     public function reset_email ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
-        if ( !empty($_POST['new_email'])
-             &&!empty($_POST['password'])
-             &&filter_var( $_POST['new_email'], FILTER_VALIDATE_EMAIL)){
+        if ( !empty($_POST['new_email']) &&!empty($_POST['password'])&&filter_var( $_POST['new_email'], FILTER_VALIDATE_EMAIL)){
             if( $res = $this->user->resetEmail( $this->mail_func ) ){
                 return $response->withStatus(200);
             } else {
@@ -140,7 +138,8 @@ class UserController extends Controller
                 $args['selector'] = $_GET['selector'];
                 return $response->withHeader('Location', self::get_url('auth/confirm'))->withStatus(302);
             } else {
-                return $response->withStatus(404, $res);
+                var_dump( $res );
+                return $response->withStatus(400, $res);
             }
         } else {
             return $response->withStatus(422, 'Some fields are empty');
@@ -151,6 +150,7 @@ class UserController extends Controller
             if ( $res = $this->user->setNewPassword() ){
                 return $response->withHeader('Location', self::get_url('guest/auth'))->withStatus(302);
             } else {
+                var_dump($res);
                 return $response->withStatus(404, $res);
             }
         } else {

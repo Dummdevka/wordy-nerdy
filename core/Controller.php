@@ -1,6 +1,5 @@
 <?php
 namespace controllers;
-use models;
 
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
@@ -21,10 +20,32 @@ abstract class Controller
         $model_class = end( $a );
         $this->model = "models\\$model_class";
     }
-     public function render( Request $request, Response $response, array $args ) : ResponseInterface {
-        require_once VIEWS_DIR . $this->layout . '.php';
+     public function render ( Request $request, Response $response, $args ) : ResponseInterface {
+         switch( $args['path']) {
+            case 'auth':
+                if( !$this->isLogged() ) {
+                    //Redirect
+                    return $response->withHeader('Location', self::get_url('public/search'));
+                }
+                break;
+            case 'guest':
+                if( $this->isLogged() ) {
+                    //Redirect
+                    return $response->withHeader('Location', self::get_url('public/search'));
+                }
+                break;
+         }
+        require_once VIEWSDIR  . $this->layout . '.php';
         return $response;
     }
-
-
+    public function isLogged () {
+        if( isset($_SESSION['auth_user_id'])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public static function get_url ($str) {
+        return BASEURL . $str;
+    }
 }
