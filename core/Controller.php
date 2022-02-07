@@ -14,13 +14,12 @@ abstract class Controller
         //Get view
         $this->config = & $GLOBALS['config'];
         $this->layout = $layout;
-
         //Get name of the model class
         $model_class = preg_match( '/.*[\\\\$](.*)Controller$/', get_class($this), $a);
         $model_class = end( $a );
         $this->model = "models\\$model_class";
     }
-     public function render ( Request $request, Response $response, $args ) : ResponseInterface {
+    public function render ( Request $request, Response $response, $args ) : ResponseInterface {
         /**
          * $args['path'] => admin/guest/admin
          * $args['page']
@@ -57,5 +56,11 @@ abstract class Controller
     }
     public static function get_url ($str) {
         return BASEURL . $str;
+    }
+    public function formErrors( Request $request, Response $response, array $path ) {
+        $args['path'] = $path[0];
+        $args['page'] = $path[1];
+        $args['message'] = $path[2];
+        return $this->render( $request, $response, $args );
     }
 }

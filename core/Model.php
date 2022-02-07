@@ -10,6 +10,7 @@ abstract class Model
     public function __construct() {
         $this->config = & $GLOBALS['config'];
         $this->db = & $GLOBALS['database'];
+        //$this->db = $this->database;
 
         //Getting name of the table
         $table_name= preg_match( '/.*[\\\\$](.*)$/', get_class($this), $a);

@@ -1,4 +1,6 @@
 <?php
+
+use Slim\Middleware\ErrorCustomMiddleware;
 use Slim\Middleware\TempEmailMiddleware;
 use Slim\Middleware\IsAuthMiddleware;
 use Slim\Middleware\IsGuestMiddleware;
@@ -12,12 +14,11 @@ $app->group('', function() use ( $app ) {
     $app->post('/reset_password', controllers\UserController::class . ':reset_password');
     $app->delete('/delete/{id}', controllers\UserController::class . ':delete_user');
     $app->post('/reset_email', controllers\UserController::class . ':reset_email');
-    $app->post('/set_new_pass', controllers\UserController::class . ':set_new_password');
+    $app->post('/auth/new_pass', controllers\UserController::class . ':set_new_password');
     $app->get('/get_favorites', controllers\UserController::class . ':get_favorite');
     $app->delete('/delete_favorite/{id}', controllers\UserController::class . ':delete_favorite');
     $app->get('/logout', controllers\UserController::class . ':log_out');
     $app->post('/add_favorite', controllers\UserController::class . ':add_favorite');
-
 })->add( new IsAuthMiddleware() );
 
 //Checking temporal email
@@ -29,8 +30,8 @@ $app->group('', function() use ( $app ) {
 //Guests only
 $app->group('', function() use ( $app ){
     $app->post('/login', controllers\UserController::class . ':log_in');
-    $app->post('/signup', controllers\UserController::class . ':sign_up');
-    $app->post('/forgot_password', controllers\UserController::class . ':forgot_password');
+    $app->post('/guest/register', controllers\UserController::class . ':sign_up');
+    $app->post('/guest/forgot_pass', controllers\UserController::class . ':forgot_password');
     $app->get('/auth_with_google', controllers\UserController::class . ':sign_up');
 })->add( new IsGuestMiddleware() );
 
@@ -40,7 +41,13 @@ $app->get('/dump_web', models\Web_example::class . ':webLoaded');
 
 //Search
 $app->get('/lit-search/{word}', controllers\SearchController::class . ':get_lit');
-$app->get('/wb-search/{word}', controllers\SearchController::class . ':get_web');
+$app->get('/web-search/{word}', controllers\SearchController::class . ':get_web');
+$app->get('/test', function( $request, $response, $args){
+    return $this->view->render($response, 'guest/register.php', [
+        'message' => 'lalal'
+    ]);
+});
 
 //Pages rendering
 $app->get('/{path}/{page}', controllers\SearchController::class . ':render');
+

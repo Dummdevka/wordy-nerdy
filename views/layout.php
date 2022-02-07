@@ -78,7 +78,7 @@
     </nav>
         <!-- Include the page -->
         <?php
-            if(!empty($args['page']) && !empty($args['path'])){
+            if( !empty($args['page']) && !empty($args['path']) ){
                 require_once 'pages/' . $args['path'] . DS . $args['page'] . '.php';
             } else {
                 echo 'No page';
