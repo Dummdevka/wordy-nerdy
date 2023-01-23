@@ -25,6 +25,7 @@ class Bookparser
                         $parse[] = ['sentence' => $sentence, 'title' => $title];
                     };
                     //array_push( $parse );
+                    
                 }
                 return $parse;
             }

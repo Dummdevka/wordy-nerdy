@@ -32,8 +32,4 @@ return [
         'new_email' => "Hi there! <br> You have recently <b>changed</b> your email on Wordy.
                         Please confirm it by clicking the link down below: ",
     ]
-
-
-
-
 ];
