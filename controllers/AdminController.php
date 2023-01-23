@@ -34,4 +34,7 @@ class AdminController extends Controller
             return $response->withStatus( 422, 'Empty set' );
         }
     }
+    public function add_book ( RequestInterface $request, ResponseInterface $response, array $args ) : ResponseInterface {
+        
+    }
 }

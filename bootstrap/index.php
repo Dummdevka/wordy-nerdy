@@ -1,20 +1,19 @@
 <?php
 
 use Slim\Factory\AppFactory;
-use Slim\Middleware\ExampleMiddleware;
-use Slim\Middleware\TempEmailMiddleware;
+use DI\Container;
 
-//Slim routing
-
+$container = new Container();
+$settings = require_once 'container.php';
+$settings( $container );
+AppFactory::setContainer( $container );
 $app = AppFactory::create();
 
 $app = $app->setBasePath('/wordy');
-//$app->add( new TempEmailMiddleware() );
-$middleware = new TempEmailMiddleware();
+$app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 
-require_once 'routes.php';
-//require_once 'container.php';
+require_once __DIR__ . DS . 'routes.php';
 
 $app->run();
 

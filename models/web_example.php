@@ -31,6 +31,7 @@ class Web_example extends Model
                 $url_id = $url->id;
                 //Getting content from all the websites
                 $content = $web->get_content($url->name);
+                //Inserting sentences for each URL
                 $a = count((array)$content);
                 for ($i = 0; $i < $a; $i++) {
                     //Creating an array for each sentence

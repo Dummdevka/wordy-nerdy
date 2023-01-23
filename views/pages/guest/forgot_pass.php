@@ -4,7 +4,8 @@
         exit();
     } else {
 ?>
-<form action="/wordy/forgot_password" method="post">
+<form action="" method="post">
+    <?php require_once 'error_message.php'; ?>
     <input type="text" placeholder="Enter your email" id="new_pass" name="email">
     <button type="submit">Reset password</button>
 </form>

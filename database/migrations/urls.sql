@@ -9,7 +9,3 @@ CREATE TABLE IF NOT EXISTS urls (
     REFERENCES categories(id)
     ON DELETE SET NULL ON UPDATE NO ACTION
 );
-
-insert into urls (name, category_id) values ('http://thefashionguitar.com/', 2);
-insert into urls (name, category_id) values ('https://reflectionsofthenaturalworld.com/', 3);
-insert into urls (name, category_id) values ('https://johnmuirlaws.com/', 3);

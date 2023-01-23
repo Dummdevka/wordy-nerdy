@@ -1,0 +1,1 @@
+{"version":1,"defects":{"UserControllerTest::test_forgotPassword":4,"UserControllerTest::test_forgot_password":4},"times":{"UserControllerTest::test_forgotPassword":0.003,"UserControllerTest::test_forgot_password":0.007}}

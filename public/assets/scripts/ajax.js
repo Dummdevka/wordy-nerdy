@@ -21,12 +21,7 @@ $("#dump_web").click(function() {
     .done( function() {
         error_mess( $("#dump_web").parent(), 'Web examples are loaded!', false );
     })
-    .fail( function( data, textStatus, errorThrown ) {
-        if ( data.status === 404 ) {
-            message = textStatus;
-        } 
-        error_mess( $("#dump_web").parent(), errorThrown );
-    })
+    .fail( handle_server_errors( data, textStatus, errorThrown ))
     .always( function() {
         $("#dump_web").val('Dump web!');
     })

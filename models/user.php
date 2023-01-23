@@ -7,6 +7,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Google\Client;
 use Google\Service\Oauth2 as ServiceOauth2;
+use RuntimeException;
 
 class User extends Model
 {
@@ -25,8 +26,6 @@ class User extends Model
             return $callback();
         } catch (\Delight\Auth\UnknownUsernameException $e) {
             return 'Unknown Username';
-            //exit;
-            //return false;
         } catch (\Delight\Auth\InvalidPasswordException $e) {
             return 'Invalid Password';
         } catch (\Delight\Auth\EmailNotVerifiedException $e) {
@@ -47,6 +46,8 @@ class User extends Model
             return 'Invalid email';
         } catch (\Delight\Auth\ConfirmationRequestNotFound $e) {
             return 'No earlier request found that could be re-sent';
+        } catch (RuntimeException $e) {
+            return $e->getMessage();
         }
     }
     public function signup($mail_func) {
@@ -96,8 +97,8 @@ class User extends Model
     }
 
     public function deleteUser($id) {
-        return $this->catchErrors(function () {
-            $this->auth->admin()->deleteUserById($id);
+        return $this->catchErrors(function () use ( $id ) {
+            $this->auth->admin()->deleteUserById( $id );
             $this->auth->destroySession();
             return true;
         });
@@ -201,11 +202,10 @@ class User extends Model
         });
     }
 
-    public function forgotPassword($mail_func) {
+    public function forgotPassword ( $mail_func ) {
         return $this->catchErrors( function() use ($mail_func) {
-
-        
             $this->auth->forgotPassword($_POST['email'], function ($selector, $token) use ($mail_func) {
+                
                 $mail_func(
                     $_POST['email'],
                     'Forgot password on Wordy',

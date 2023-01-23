@@ -6,7 +6,7 @@ ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
 
 function debug( $str ) {
-	echo '<pre>';
+	echo '<plaintext>';
 	var_dump($str);
 }
 
@@ -15,8 +15,8 @@ function debug( $str ) {
 define('BASEDIR', dirname(__DIR__,1));
 define('BASEURL', 'http://localhost/wordy/');
 define('DS', DIRECTORY_SEPARATOR);
-define('CLASS_DIR', BASEDIR . '/classes/');
-define('VIEWS_DIR', BASEDIR . '/views/');
+define('CLASSDIR', BASEDIR . '/classes/');
+define('VIEWSDIR', BASEDIR . '/views/');
 require_once BASEDIR . '/vendor/autoload.php';
 
 $config = require_once (BASEDIR . '/config.php');
