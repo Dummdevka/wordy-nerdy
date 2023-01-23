@@ -7,7 +7,7 @@
         "delight-im/auth": "^8.3",
         "slim/http-cache": "^1.1",
         "google/apiclient": "^2.0",
-        "php-di/php-di": "^2.1",
+        "php-di/php-di": "^6.3",
         "phpmailer/phpmailer": "^6.5",
         "phpunit/phpunit": "^9.5"
     },

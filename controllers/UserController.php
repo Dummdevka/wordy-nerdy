@@ -26,18 +26,13 @@ class UserController extends Controller
         };
     }
     public function sign_up ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
-        $method = explode('/', $request->getUri()->getPath());
-        //Sign up with Google or not??? (2 options)
-        $method = end($method);
-        if ( ($res = $this->user->$method( $this->mail_func )) === true ) {
+        if ( ($res = $this->user->signUp( $this->mail_func )) === true ) {
             $response->getBody()->write( 'Confirm your email!' );
             return $response->withHeader( 'Location', self::get_url('guest/auth?status=confirm'))->withStatus( 302 );
         } else {
+            //Error handling for forms submitted directly
             //Pass message to the view (provisional solve)
-            $args['path'] = 'guest';
-            $args['page'] = 'register';
-            $args['message'] = $res;
-            $this->render( $request, $response, $args );
+            $this->formErrors( $request, $response, ['guest', 'register', $res] );
             return $response;
         }
     }
@@ -54,6 +49,9 @@ class UserController extends Controller
             return $response->withStatus(400, 'You cannot submit an empty form!');
         }
     }
+    /**
+     * AJAX submission
+     */
     public function log_out (RequestInterface $request, ResponseInterface $response, array $args ) : ResponseInterface {
         if ( ($this->user->logout()) === true ){
             //Redirect back
@@ -114,11 +112,12 @@ class UserController extends Controller
             if( ($res = $this->user->resetPassword()) === true ){
                 return $response->withStatus(200);
             } else {
-                return $response->withStatus(404, $res);
+                $message = $res;
             }
         } else {
-            return $response->withStatus(422, 'Some fields are empty');
+            $message = 'Some fields are empty';
         }
+        return $this->formErrors( $request, $response, ['guest', 'new_pass', $message] );
     }
     public function resend_email ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         if ( isset($_SESSION['temp_email']) ) {
@@ -137,17 +136,14 @@ class UserController extends Controller
                 $_SESSION['temp_email'] = $_POST['email'];
                 $args['token'] = $_GET['token'];
                 $args['selector'] = $_GET['selector'];
-                return $response->withHeader('Location', self::get_url('auth/confirm'))->withStatus(302);
+                return $response->withHeader('Location', self::get_url('auth/confirm'))->withStatus( 302 );
             } else {
-                $args['path'] = 'auth';
-                $args['page'] = 'forgot_password';
-                $args['message'] = $res;
-                $this->render( $request, $response, $args );
-                return $response;
+                $message = $res;
             }
         } else {
-            return $response->withStatus(422, 'Some fields are empty');
+            $message = 'Some fields are empty';
         }
+        return $this->formErrors( $request, $response, ['guest', 'forgot_pass', $message] );
     }
     public function set_new_password ( RequestInterface $request, ResponseInterface $response, $args ) : ResponseInterface {
         if ( isset($_POST['new_password'])&& isset($_COOKIE['selector']) && isset($_COOKIE['token']) ){
